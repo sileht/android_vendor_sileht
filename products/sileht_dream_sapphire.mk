@@ -20,10 +20,10 @@ $(call inherit-product, vendor/cyanogen/products/cyanogen.mk)
 
 USE_CAMERA_STUB := false
 
-PRODUCT_NAME := sileht_magic
+PRODUCT_NAME := sileht_dream_sapphire
 PRODUCT_BRAND := htc
-PRODUCT_DEVICE := sileht_magic
-PRODUCT_MODEL := Magic
+PRODUCT_DEVICE := dream_sapphire
+PRODUCT_MODEL := Dream/Sapphire
 PRODUCT_MANUFACTURER := HTC
 PRODUCT_BUILD_PROP_OVERRIDES += BUILD_ID=EPE54B BUILD_DISPLAY_ID=EPE54B BUILD_FINGERPRINT=google/passion/passion/mahimahi:2.1-update1/ERE27/24178:user/release-keys PRIVATE_BUILD_DESC="passion-user 2.1-update1 ERE27 24178 release-keys"
 
