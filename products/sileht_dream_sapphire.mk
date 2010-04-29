@@ -40,8 +40,10 @@ PRODUCT_COPY_FILES += \
 	vendor/cyanogen/proprietary/HtcCopyright.apk:system/app/HtcCopyright.apk \
 	vendor/cyanogen/proprietary/PassionQuickOffice.apk:system/app/PassionQuickOffice.apk
 
+CVERSION := 5.0.7-sileht-$(shell date +%m%d%Y)
+
 PRODUCT_PROPERTY_OVERRIDES += \
-          ro.modversion=CyanogenMod-5.0.7-sileht-$(shell date +%m%d%Y) \
+          ro.modversion=CyanogenMod-$(VERSION)
             ro.ril.hep=1 \
             ro.ril.enable.dtm=1 \
             ro.ril.hsdpa.category=8 \
@@ -53,3 +55,13 @@ PRODUCT_PROPERTY_OVERRIDES += \
 
 include frameworks/base/data/sounds/AudioPackage4.mk 
 include vendor/htc/dream_sapphire/device_dream_sapphire.mk
+
+FINAL_TARGET := cyanogen-$(CVERSION).zip
+
+$(FINAL_TARGET): bacon
+	@echo "Finish $(FINAL_TARGET)"
+	$(hide) cp -f $(INTERNAL_OTA_PACKAGE_TARGET) $(FINAL_TARGET)
+
+it: $(FINAL_TARGET)
+
+
