@@ -38,8 +38,7 @@ PRODUCT_COPY_FILES += \
     vendor/sileht/prebuilt/common/etc/bashrc:system/etc/bashrc \
 	vendor/cyanogen/proprietary/GenieWidget.apk:system/app/GenieWidget.apk \
 	vendor/cyanogen/proprietary/HtcCopyright.apk:system/app/HtcCopyright.apk \
-	vendor/cyanogen/proprietary/PassionQuickOffice.apk:system/app/PassionQuickOffice.apk \
-	vendor/cyanogen/proprietary/libinterstitial.so:system/lib/libinterstitial.so
+	vendor/cyanogen/proprietary/PassionQuickOffice.apk:system/app/PassionQuickOffice.apk
 
 PRODUCT_PROPERTY_OVERRIDES += \
           ro.modversion=CyanogenMod-5.0.7-sileht-$(shell date +%m%d%Y) \
