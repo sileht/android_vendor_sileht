@@ -35,16 +35,14 @@ PRODUCT_LOCALES:=\
         fr_FR
 
 PRODUCT_COPY_FILES += \
-    vendor/sileht/prebuilt/common/etc/bashrc:system/etc/bashrc 
-
-UNWANTED_PRODUCT_COPY_FILES := \
-	vendor/cyanogen/proprietary/Maps.apk:system/app/Maps.apk \
-	vendor/cyanogen/proprietary/com.amazon.mp3.apk:system/app/com.amazon.mp3.apk
-
-PRODUCT_COPY_FILES := $(filter-out $(UNWANTED_PRODUCT_COPY_FILES), $(PRODUCT_COPY_FILES))
+    vendor/sileht/prebuilt/common/etc/bashrc:system/etc/bashrc \
+	vendor/cyanogen/proprietary/GenieWidget.apk:system/app/GenieWidget.apk \
+	vendor/cyanogen/proprietary/HtcCopyright.apk:system/app/HtcCopyright.apk \
+	vendor/cyanogen/proprietary/PassionQuickOffice.apk:system/app/PassionQuickOffice.apk \
+	vendor/cyanogen/proprietary/libinterstitial.so:system/lib/libinterstitial.so
 
 PRODUCT_PROPERTY_OVERRIDES += \
-          ro.modversion=CyanogenMod-5.0.7-sileht0 \
+          ro.modversion=CyanogenMod-5.0.7-sileht-$(shell date +%m%d%Y) \
             ro.ril.hep=1 \
             ro.ril.enable.dtm=1 \
             ro.ril.hsdpa.category=8 \
