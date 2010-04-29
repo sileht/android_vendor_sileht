@@ -40,7 +40,7 @@ PRODUCT_COPY_FILES += \
 	vendor/cyanogen/proprietary/HtcCopyright.apk:system/app/HtcCopyright.apk \
 	vendor/cyanogen/proprietary/PassionQuickOffice.apk:system/app/PassionQuickOffice.apk
 
-CVERSION := 5.0.7-sileht-$(shell date +%m%d%Y)
+CVERSION := 5.0.7-sileht-$(shell date +%y%m%d%H%M)
 
 PRODUCT_PROPERTY_OVERRIDES += \
           ro.modversion=CyanogenMod-$(VERSION)
@@ -56,7 +56,7 @@ PRODUCT_PROPERTY_OVERRIDES += \
 include frameworks/base/data/sounds/AudioPackage4.mk 
 include vendor/htc/dream_sapphire/device_dream_sapphire.mk
 
-FINAL_TARGET := cyanogen-$(CVERSION).zip
+FINAL_TARGET := cyanogenmod-$(CVERSION).zip
 
 $(FINAL_TARGET): bacon
 	@echo "Finish $(FINAL_TARGET)"
