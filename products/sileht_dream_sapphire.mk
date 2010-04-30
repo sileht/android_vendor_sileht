@@ -35,12 +35,9 @@ PRODUCT_LOCALES:=\
         fr_FR
 
 PRODUCT_COPY_FILES += \
-    vendor/sileht/prebuilt/common/etc/bashrc:system/etc/bashrc \
-	vendor/cyanogen/proprietary/GenieWidget.apk:system/app/GenieWidget.apk \
-	vendor/cyanogen/proprietary/HtcCopyright.apk:system/app/HtcCopyright.apk \
-	vendor/cyanogen/proprietary/PassionQuickOffice.apk:system/app/PassionQuickOffice.apk
+    vendor/sileht/prebuilt/common/etc/bashrc:system/etc/bashrc
 
-CVERSION := 5.0.7-sileht-$(shell date +%y%m%d%H%M)
+CVERSION := 5.0.7-$(shell date +%y%m%d)
 
 PRODUCT_PROPERTY_OVERRIDES += \
           ro.modversion=CyanogenMod-$(VERSION)
@@ -56,7 +53,7 @@ PRODUCT_PROPERTY_OVERRIDES += \
 include frameworks/base/data/sounds/AudioPackage4.mk 
 include vendor/htc/dream_sapphire/device_dream_sapphire.mk
 
-FINAL_TARGET := cyanogenmod-$(CVERSION).zip
+FINAL_TARGET := silehtmod-$(CVERSION).zip
 
 $(FINAL_TARGET): bacon
 	@echo "Finish $(FINAL_TARGET)"
