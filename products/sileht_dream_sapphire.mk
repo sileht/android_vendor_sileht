@@ -40,7 +40,7 @@ PRODUCT_COPY_FILES += \
 CVERSION := 5.0.7-$(shell date +%y%m%d)
 
 PRODUCT_PROPERTY_OVERRIDES += \
-          ro.modversion=CyanogenMod-$(CVERSION)
+          ro.modversion=SilehtMod-$(CVERSION)
             ro.ril.hep=1 \
             ro.ril.enable.dtm=1 \
             ro.ril.hsdpa.category=8 \
