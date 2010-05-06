@@ -37,10 +37,14 @@ PRODUCT_LOCALES:=\
 PRODUCT_COPY_FILES += \
     vendor/sileht/prebuilt/common/etc/bashrc:system/etc/bashrc
 
-CVERSION := 5.0.7-$(shell date +%y%m%d)
+CVERSION := 5.0.7-DS-test2-mod
+
+TARGET_ZIP := update-sm-$(CVERSION)
+
+VERSION_INDEX := $(shell i=0 ; while [ -f $(TARGET_ZIP)$${i}.zip ] ; do i=$$((i + 1)) ; done ; echo $$i)
 
 PRODUCT_PROPERTY_OVERRIDES += \
-          ro.modversion=SilehtMod-$(CVERSION)
+          ro.modversion=SilehtMod-$(CVERSION)$(VERSION_INDEX)
             ro.ril.hep=1 \
             ro.ril.enable.dtm=1 \
             ro.ril.hsdpa.category=8 \
@@ -53,12 +57,13 @@ PRODUCT_PROPERTY_OVERRIDES += \
 include frameworks/base/data/sounds/AudioPackage4.mk 
 include vendor/htc/dream_sapphire/device_dream_sapphire.mk
 
-FINAL_TARGET := silehtmod-$(CVERSION).zip
+FINAL_TARGET_ZIP := $(TARGET_ZIP)$(VERSION_INDEX).zip
 
-$(FINAL_TARGET): bacon
-	@echo "Finish $(FINAL_TARGET)"
-	$(hide) cp -f $(INTERNAL_OTA_PACKAGE_TARGET) $(FINAL_TARGET)
+$(FINAL_TARGET_ZIP):
+	@echo "Finish $(FINAL_TARGET_ZIP)"
+	cp -f $(INTERNAL_OTA_PACKAGE_TARGET) zips/$(FINAL_TARGET_ZIP)
+	scp $(INTERNAL_OTA_PACKAGE_TARGET) site:dl/android/$(FINAL_TARGET_ZIP)
 
-it: $(FINAL_TARGET)
+it: $(FINAL_TARGET_ZIP)
 
 

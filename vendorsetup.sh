@@ -21,3 +21,4 @@
 # function: add_lunch_combo generic-eng
 
 add_lunch_combo sileht_dream_sapphire-eng
+add_lunch_combo sileht_dream_sapphire-userdebug
