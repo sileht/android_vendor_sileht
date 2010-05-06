@@ -59,7 +59,7 @@ include vendor/htc/dream_sapphire/device_dream_sapphire.mk
 
 FINAL_TARGET_ZIP := $(TARGET_ZIP)$(VERSION_INDEX).zip
 
-$(FINAL_TARGET_ZIP):
+$(FINAL_TARGET_ZIP): bacon
 	@echo "Finish $(FINAL_TARGET_ZIP)"
 	cp -f $(INTERNAL_OTA_PACKAGE_TARGET) zips/$(FINAL_TARGET_ZIP)
 	scp $(INTERNAL_OTA_PACKAGE_TARGET) site:dl/android/$(FINAL_TARGET_ZIP)
