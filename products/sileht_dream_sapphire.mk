@@ -16,9 +16,17 @@
 
 # This is the top-level configuration for a US-configured CyanogenMod build
 
+#CYANOGEN_WITH_GOOGLE:=true
+
+# This is the top-level configuration for a US-configured CyanogenMod build
 $(call inherit-product, vendor/cyanogen/products/cyanogen.mk)
 
+#TARGET_OTA_BACKUPTOOL=False
 USE_CAMERA_STUB := false
+WITH_WINDOWS_MEDIA:=true
+WITH_HTCACOUSTIC_HACK:=false
+WITH_JIT=true
+WITH_JIT_TUNING=true
 
 PRODUCT_NAME := sileht_dream_sapphire
 PRODUCT_BRAND := htc
@@ -30,21 +38,24 @@ PRODUCT_BUILD_PROP_OVERRIDES += BUILD_ID=EPE54B BUILD_DISPLAY_ID=EPE54B BUILD_FI
 PRODUCT_PACKAGES += \
     Stk
 
-PRODUCT_LOCALES:=\
-        en_US \
-        fr_FR
+#PRODUCT_LOCALES:=\
+#        en_US \
+#        fr_FR
 
 PRODUCT_COPY_FILES += \
-    vendor/sileht/prebuilt/common/etc/bashrc:system/etc/bashrc
+    vendor/sileht/prebuilt/common/etc/bashrc:system/etc/bashrc \
+	     vendor/cyanogen/prebuilt/dream_sapphire/media/bootanimation.zip:system/media/bootanimation.zip
 
-CVERSION := 5.0.7-DS-test2-mod
+CVERSION := $(shell sed -n '/[[:space:]]*ro.modversion=CyanogenMod-/s///gp' vendor/cyanogen/products/cyanogen_dream_sapphire.mk | tail -1)-mod
 
 TARGET_ZIP := update-sm-$(CVERSION)
 
-VERSION_INDEX := $(shell i=0 ; while [ -f $(TARGET_ZIP)$${i}.zip ] ; do i=$$((i + 1)) ; done ; echo $$i)
+VERSION_INDEX := $(shell i=$$(ls -1 $(TARGET_ZIP)*-signed.zip 2>/dev/null | sed -n 's/$(TARGET_ZIP)\([[:digit:]]*\)-signed.zip/\1/gp' | sort -n | tail -1) ; echo $$((i+1)))
+
 
 PRODUCT_PROPERTY_OVERRIDES += \
-          ro.modversion=SilehtMod-$(CVERSION)$(VERSION_INDEX)
+            ro.ril.hsxpa=2 \
+            ro.ril.gprsclass=12 \
             ro.ril.hep=1 \
             ro.ril.enable.dtm=1 \
             ro.ril.hsdpa.category=8 \
@@ -52,18 +63,24 @@ PRODUCT_PROPERTY_OVERRIDES += \
             ro.ril.enable.3g.prefix=1 \
             ro.ril.htcmaskw1.bitmask = 4294967295 \
             ro.ril.htcmaskw1 = 14449 \
-            ro.ril.hsupa.category = 5
+            ro.ril.hsupa.category = 5 \
+            dalvik.vm.execution-mode=int:jit \
+            ro.modversion=CyanogenMod-$(CVERSION)$(VERSION_INDEX)
+
 
 include frameworks/base/data/sounds/AudioPackage4.mk 
 include vendor/htc/dream_sapphire/device_dream_sapphire.mk
 
-FINAL_TARGET_ZIP := $(TARGET_ZIP)$(VERSION_INDEX).zip
+FINAL_TARGET_ZIP := $(TARGET_ZIP)$(VERSION_INDEX)-signed.zip
 
 $(FINAL_TARGET_ZIP): bacon
 	@echo "Finish $(FINAL_TARGET_ZIP)"
-	cp -f $(INTERNAL_OTA_PACKAGE_TARGET) $(FINAL_TARGET_ZIP)
-	scp $(INTERNAL_OTA_PACKAGE_TARGET) site:dl/android/$(FINAL_TARGET_ZIP)
+	./vendor/cyanogen/tools/squisher
+	mv $$OUT/update-cm-$(CVERSION)$(VERSION_INDEX)-signed.zip $(FINAL_TARGET_ZIP)
+
 
 it: $(FINAL_TARGET_ZIP)
 
+up: it
+	scp $(FINAL_TARGET_ZIP) site:dl/android/$(FINAL_TARGET_ZIP)
 
