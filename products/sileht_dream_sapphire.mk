@@ -15,18 +15,11 @@
 #
 
 # This is the top-level configuration for a US-configured CyanogenMod build
-
-#CYANOGEN_WITH_GOOGLE:=true
-
-# This is the top-level configuration for a US-configured CyanogenMod build
 $(call inherit-product, vendor/cyanogen/products/cyanogen.mk)
 
-#TARGET_OTA_BACKUPTOOL=False
 USE_CAMERA_STUB := false
-WITH_WINDOWS_MEDIA:=true
-WITH_HTCACOUSTIC_HACK:=false
-WITH_JIT=true
-WITH_JIT_TUNING=true
+WITH_JIT := true
+WITH_JIT_TUNING := true
 
 PRODUCT_NAME := sileht_dream_sapphire
 PRODUCT_BRAND := htc
@@ -44,7 +37,7 @@ PRODUCT_PACKAGES += \
 
 PRODUCT_COPY_FILES += \
     vendor/sileht/prebuilt/common/etc/bashrc:system/etc/bashrc \
-	     vendor/cyanogen/prebuilt/dream_sapphire/media/bootanimation.zip:system/media/bootanimation.zip
+	vendor/cyanogen/prebuilt/dream_sapphire/media/bootanimation.zip:system/media/bootanimation.zip
 
 CVERSION := $(shell sed -n '/[[:space:]]*ro.modversion=CyanogenMod-/s///gp' vendor/cyanogen/products/cyanogen_dream_sapphire.mk | tail -1)-mod
 
@@ -54,16 +47,6 @@ VERSION_INDEX := $(shell i=$$(ls -1 $(TARGET_ZIP)*-signed.zip 2>/dev/null | sed 
 
 
 PRODUCT_PROPERTY_OVERRIDES += \
-            ro.ril.hsxpa=2 \
-            ro.ril.gprsclass=12 \
-            ro.ril.hep=1 \
-            ro.ril.enable.dtm=1 \
-            ro.ril.hsdpa.category=8 \
-            ro.ril.enable.a53=1 \
-            ro.ril.enable.3g.prefix=1 \
-            ro.ril.htcmaskw1.bitmask = 4294967295 \
-            ro.ril.htcmaskw1 = 14449 \
-            ro.ril.hsupa.category = 5 \
             dalvik.vm.execution-mode=int:jit \
             ro.modversion=CyanogenMod-$(CVERSION)$(VERSION_INDEX)
 
