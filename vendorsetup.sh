@@ -53,6 +53,7 @@ function reposync(){
 }
 
 function fprep(){
+	[ ! -d .repo ] && echo 'Not root dir' && return
     find out -name \*.prop | xargs rm -f ;
 	reposync && automerge
 }
