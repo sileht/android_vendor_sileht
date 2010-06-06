@@ -30,9 +30,9 @@ if [ -z "$JAVA_HOME" ]; then
 fi
 
 function genbuildspec(){
-	buildvariant="$1"
-	[ -z "$buildvariant" ] && buildvariant="eng"
-	rm -f buildspec.mk
+    buildvariant="$1"
+    [ -z "$buildvariant" ] && buildvariant="eng"
+    rm -f buildspec.mk
 cat > buildspec.mk <<EOF
 TARGET_PRODUCT:=sileht_dream_sapphire
 TARGET_BUILD_VARIANT:=$buildvariant
@@ -40,104 +40,114 @@ TARGET_BUILD_TYPE:=release
 EOF
 }
 
-#lunch sileht_dream_sapphire-$buildvariant
 
 githublogin="sileht"
 
-fprep(){
-	find out -name \*.prop | xargs rm -f ;
-	set -e
-	pushd .repo/manifests/
-	git fetch --all
-	git rebase cyanogen/eclair-ds
-	git push sileht --force
-	popd >/dev/null
-	repo sync 
-	automerge
-
-	# Reload env
-	. build/envsetup.sh
-	make -j4 it
-	set +e
-}
-fbuild(){	
-	. build/envsetup.sh
-	make -j4 it
+function reposync(){
+    pushd .repo/manifests/
+    git fetch --all && \
+    git rebase cyanogen/eclair-ds && \
+    git push sileht --force && \
+    popd >/dev/null 
+    repo sync 
 }
 
-automerge(){
+function fprep(){
+    find out -name \*.prop | xargs rm -f ;
+	reposync && automerge
+}
+function fbuild(){
+    buildvariant="$1"
+    [ -z "$buildvariant" ] && buildvariant="eng"
+    . build/envsetup.sh
+	lunch sileht_dream_sapphire-$buildvariant
+    make -j4 it
+}
+
+function automerge(){
     for repo in $(sed -n -e 's/<project path="\([^"]*\)".*/\1/gp' .repo/manifest.xml); do
-		[ ! -d $repo ] && continue
+        [ ! -d $repo ] && continue
         pushd $repo
-		git remote -v | grep "^github.*$githublogin" >/dev/null
-		if [ $? -eq 0 ]; then
-        	branch=$(git remote | grep automerge | sed 's/^automerge#//g')
-        	remote="automerge#$branch"
-        	if [ -n "$branch" ]; then
-        		echo -ne "* Checking for repo $repo: "
-        		echo "$branch"
-            	git fetch $remote
-            	git merge $remote/$branch && git push $githublogin
-        	fi
-		fi
+        git remote -v | grep "^github.*$githublogin" >/dev/null
+        if [ $? -eq 0 ]; then
+            branch=$(git remote | grep automerge | sed 's/^automerge#//g')
+            remote="automerge#$branch"
+            if [ -n "$branch" ]; then
+                echo -ne "* Checking for repo $repo: "
+                echo "$branch"
+                git fetch $remote
+                git merge $remote/$branch && git push $githublogin
+            fi
+        fi
         popd >/dev/null
     done
 }
 
 
 setuprepo(){
-	repo="$1"
-	if [ -z "$repo" -o ! -d "$repo" -o ! -d "$repo/.git" ] ; then
-		echo "Not a valid repo."
-		return 1
-	fi
+    repo="$1"
+    if [ -z "$repo" -o ! -d "$repo" -o ! -d "$repo/.git" ] ; then
+        echo "Not a valid repo."
+        return 1
+    fi
 
-	branch=$(grep "$repo" .repo/manifest.xml | sed -n -e 's@.*revision="\([^"]*\)".*@\1@gp')
-	[ -z "$branch" ] && branch="eclair"
+    branch=$(grep "$repo" .repo/manifest.xml | sed -n -e 's@.*revision="\([^"]*\)".*@\1@gp')
+    [ -z "$branch" ] && branch="eclair"
 
-	reporemote=$(grep "$repo" .repo/manifest.xml | sed -n -e 's@.*remote="\([^"]*\)".*@\1@gp')
-	[ -z "$reporemote" ] && reporemote="korg"
+    reporemote=$(grep "$repo" .repo/manifest.xml | sed -n -e 's@.*remote="\([^"]*\)".*@\1@gp')
+    [ -z "$reporemote" ] && reporemote="korg"
 
-	reponame=$(grep "$repo" .repo/manifest.xml | sed -n -e 's@.*name="\([^"]*\)".*@\1@gp')
-	destreponame="$githublogin/$(echo $reponame | sed -e 's@cyanogen/@@g' -e 's@/@_@g')"
-	
-	sourceurl=$(cd $repo && git remote -v | egrep '^(korg|github).*push' | awk '{print $2}')
-	desturl="git@github.com:$destreponame.git"
+    reponame=$(grep "$repo" .repo/manifest.xml | sed -n -e 's@.*name="\([^"]*\)".*@\1@gp')
+    destreponame="$githublogin/$(echo $reponame | sed -e 's@cyanogen/@@g' -e 's@/@_@g')"
 
-	echo "branch: $branch"
-	echo "- source: $sourceurl"
-	echo "- $githublogin: $desturl"
-	echo "- repo: $destreponame"
-	read
-	pushd $repo
-	git remote add $githublogin $desturl
-	git remote add automerge#$branch $sourceurl
-	git fetch --all -p
-	popd >/dev/null
-	pushd .repo/manifests/
-	sed -i "s@${reponame}\".*@${destreponame}\" remote=\"github\" />@g" default.xml
-	git commit -a -m "Use my $destreponame repo"
-	popd >/dev/null
+    sourceurl=$(cd $repo && git remote -v | egrep '^(korg|github).*push' | awk '{print $2}')
+    desturl="git@github.com:$destreponame.git"
+
+    echo "branch: $branch"
+    echo "- source: $sourceurl"
+    echo "- $githublogin: $desturl"
+    echo "- repo: $destreponame"
+    read
+    pushd $repo
+    git remote add $githublogin $desturl
+    git remote add automerge#$branch $sourceurl
+    git fetch --all -p
+    popd >/dev/null
+    pushd .repo/manifests/
+    sed -i "s@${reponame}\".*@${destreponame}\" remote=\"github\" />@g" default.xml
+    git commit -a -m "Use my $destreponame repo"
+    popd >/dev/null
 }
 
-cleanuprepo(){
-	repo="$1"
-	if [ -z "$repo" -o ! -d "$repo" -o ! -d "$repo/.git" ] ; then
-		echo "Not a valid repo."
-		return 1
-	fi
+function cleanuprepo(){
+    repo="$1"
+    if [ -z "$repo" -o ! -d "$repo" -o ! -d "$repo/.git" ] ; then
+        echo "Not a valid repo."
+        return 1
+    fi
 
-#	commit=$(git log --grep="Use my $destreponame repo" --format='format:%H' | head -1)
+#   commit=$(git log --grep="Use my $destreponame repo" --format='format:%H' | head -1)
 
-#	sourceurl=$(cd $repo && git remote -v | egrep '^automerge.*push' | awk '{print $2}')
+#   sourceurl=$(cd $repo && git remote -v | egrep '^automerge.*push' | awk '{print $2}')
 
-	pushd $repo
-	for i in $(git remote); do
-		git remote rm $i
-	done
-	popd >/dev/null
-	repo sync $repo
-	pushd $repo
-	git fetch -p --all -v
-	popd >/dev/null
+    pushd $repo
+    for i in $(git remote); do
+        git remote rm $i
+    done
+    popd >/dev/null
+    repo sync $repo
+    pushd $repo
+    git fetch -p --all -v
+    popd >/dev/null
 }
+
+cat <<EOF
+Sileht env ready:
+- genbuildspec
+- fprep
+- fbuild
+- automerge
+- setuprepo path
+- cleanrepo path
+EOF
+
