@@ -43,6 +43,10 @@ EOF
 
 githublogin="sileht"
 
+function goroot(){
+	cd ~/workspace/android/mydroid/
+}
+
 function reposync(){
     pushd .repo/manifests/
     git fetch --all && \
@@ -55,7 +59,11 @@ function reposync(){
 function fprep(){
 	[ ! -d .repo ] && echo 'Not root dir' && return
     find out -name \*.prop | xargs rm -f ;
-	reposync && automerge
+	if [ "$1" == "-q" ]  ; then
+		repo sync && automerge
+	else
+		reposync && automerge
+	fi
 }
 function fbuild(){
     buildvariant="$1"
