@@ -18,8 +18,8 @@
 $(call inherit-product, vendor/cyanogen/products/cyanogen.mk)
 
 USE_CAMERA_STUB := false
-WITH_JIT := true
-WITH_JIT_TUNING := true
+#WITH_JIT := true
+#WITH_JIT_TUNING := true
 
 PRODUCT_NAME := sileht_dream_sapphire
 PRODUCT_BRAND := htc
@@ -47,8 +47,8 @@ VERSION_INDEX := $(shell i=$$(ls -1 $(TARGET_ZIP)*-signed.zip 2>/dev/null | sed 
 
 
 PRODUCT_PROPERTY_OVERRIDES += \
-            dalvik.vm.execution-mode=int:jit \
             ro.modversion=CyanogenMod-$(CVERSION)$(VERSION_INDEX)
+            #dalvik.vm.execution-mode=int:jit \
 
 
 include frameworks/base/data/sounds/AudioPackage4.mk 
