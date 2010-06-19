@@ -23,6 +23,7 @@
 add_lunch_combo sileht_dream_sapphire-eng
 add_lunch_combo sileht_dream_sapphire-userdebug
 
+[ -z "$PS1" ] && return
 
 if [ -z "$JAVA_HOME" ]; then
     export JAVA_HOME=/home/prout/workspace/android/jdk1.6.0_20/
@@ -56,9 +57,13 @@ function reposync(){
     repo sync 
 }
 
-function fprep(){
+function fclean(){
 	[ ! -d .repo ] && echo 'Not root dir' && return
     find out -name \*.prop | xargs rm -f ;
+}
+
+function fprep(){
+    fclean
 	if [ "$1" == "-q" ]  ; then
 		repo sync && automerge
 	else
@@ -74,7 +79,9 @@ function fbuild(){
 }
 
 function automerge(){
-    for repo in $(sed -n -e 's/<project path="\([^"]*\)".*/\1/gp' .repo/manifest.xml); do
+	repos="$1"
+	[ -z "$repos" ] && repos=$(sed -n -e 's/<project path="\([^"]*\)".*/\1/gp' .repo/manifest.xml)
+    for repo in $repos; do
         [ ! -d $repo ] && continue
         pushd $repo
         git remote -v | grep "^github.*$githublogin" >/dev/null
@@ -85,7 +92,7 @@ function automerge(){
                 echo -ne "* Checking for repo $repo: "
                 echo "$branch"
                 git fetch $remote
-                git merge $remote/$branch && git push $githublogin
+                git rebase $remote/$branch && git push $githublogin --force
             fi
         fi
         popd >/dev/null
@@ -149,14 +156,4 @@ function cleanuprepo(){
     git fetch -p --all -v
     popd >/dev/null
 }
-
-cat <<EOF
-Sileht env ready:
-- genbuildspec
-- fprep
-- fbuild
-- automerge
-- setuprepo path
-- cleanrepo path
-EOF
 
