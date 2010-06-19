@@ -80,7 +80,7 @@ function fbuild(){
 
 function automerge(){
 	repos="$1"
-	[ -z "$repos" ] && repos=$(sed -n -e 's/<project path="\([^"]*\)".*/\1/gp' .repo/manifest.xml)
+	[ -z "$repos" ] && repos=($(sed -n -e 's/<project path="\([^"]*\)".*/\1/gp' .repo/manifest.xml))
     for repo in $repos; do
         [ ! -d $repo ] && continue
         pushd $repo
