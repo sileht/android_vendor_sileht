@@ -32,7 +32,7 @@ PRODUCT_MANUFACTURER := HTC
 PRODUCT_BUILD_PROP_OVERRIDES += BUILD_ID=FRF83 BUILD_DISPLAY_ID=FRF83 PRODUCT_NAME=passion BUILD_FINGERPRINT=google/passion/passion/mahimahi:2.2/FRF83/42295:user/release-keys
 PRIVATE_BUILD_DESC="passion-user 2.2 FRF83 42295 release-keys"
 
-PRODUCT_PROPERTY_OVERRIDES := \
+PRODUCT_PROPERTY_OVERRIDES += \
     ro.ril.hsxpa=2 \
     ro.ril.gprsclass=12 \
 	ro.ril.hep=1 \
@@ -74,8 +74,8 @@ FINAL_TARGET_ZIP := $(TARGET_ZIP)$(VERSION_INDEX)-signed.zip
 
 $(FINAL_TARGET_ZIP): bacon
 	@echo "Finish $(FINAL_TARGET_ZIP)"
-	./vendor/cyanogen/tools/squisher
-	mv $$OUT/update-cm-$(CVERSION)$(VERSION_INDEX)-signed.zip $(FINAL_TARGET_ZIP)
+	#./vendor/cyanogen/tools/squisher
+	#mv $$OUT/update-cm-$(CVERSION)$(VERSION_INDEX)-signed.zip $(FINAL_TARGET_ZIP)
 
 
 it: $(FINAL_TARGET_ZIP)
