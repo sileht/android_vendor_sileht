@@ -32,13 +32,31 @@ PRODUCT_MANUFACTURER := HTC
 PRODUCT_BUILD_PROP_OVERRIDES += BUILD_ID=FRF83 BUILD_DISPLAY_ID=FRF83 PRODUCT_NAME=passion BUILD_FINGERPRINT=/passion/passion/mahimahi:2.2/FRF83/42295:user/release-keys
 PRIVATE_BUILD_DESC="passion-user 2.2 FRF83 42295 release-keys"
 
+PRODUCT_PROPERTY_OVERRIDES := \
+    ro.ril.hsxpa=2 \
+    ro.ril.gprsclass=12 \
+	ro.ril.hep=1 \
+	ro.ril.enable.dtm=1 \
+	ro.ril.enable.a53=1 \
+	ro.ril.hsdpa.category=8 \
+	ro.ril.hsupa.category=5 \
+	ro.ril.enable.3g.prefix=1
+
+PRODUCT_PACKAGES := \
+	ADWLauncher
+
+
+#ro.ril.htcmaskw1.bitmask = 4294967295 \
+#ro.ril.htcmaskw1 = 14449 \
+
+
 #PRODUCT_LOCALES:=\
 #        en_US \
 #        fr_FR
 
 PRODUCT_COPY_FILES += \
     vendor/sileht/prebuilt/common/etc/bashrc:system/etc/bashrc \
-	vendor/sileht/prebuilt/sapphire/media/bootanimation.zip:system/media/bootanimation.zip
+	vendor/cyanogen/prebuilt/sapphire/media/bootanimation.zip:system/media/bootanimation.zip
 
 #CVERSION := $(shell sed -n '/[[:space:]]*ro.modversion=CyanogenMod-/s///gp' vendor/cyanogen/products/cyanogen_dream_sapphire.mk | tail -1)-mod
 CVERSION := 6.0.0-SA-test0
