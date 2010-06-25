@@ -20,27 +20,16 @@
 # In particular, you can add lunch options with the add_lunch_combo
 # function: add_lunch_combo generic-eng
 
-add_lunch_combo sileht_dream_sapphire-eng
-add_lunch_combo sileht_dream_sapphire-userdebug
+add_lunch_combo sileht_sapphire-eng
+add_lunch_combo sileht_sapphire-userdebug
+
 
 [ -z "$PS1" ] && return
 
 if [ -z "$JAVA_HOME" ]; then
-    export JAVA_HOME=/home/prout/workspace/android/jdk1.6.0_20/
+    export JAVA_HOME=/home/prout/workspace/android/jdk1.5.0_22/
     export PATH=$JAVA_HOME/bin:$PATH
 fi
-
-function genbuildspec(){
-    buildvariant="$1"
-    [ -z "$buildvariant" ] && buildvariant="eng"
-    rm -f buildspec.mk
-cat > buildspec.mk <<EOF
-TARGET_PRODUCT:=sileht_dream_sapphire
-TARGET_BUILD_VARIANT:=$buildvariant
-TARGET_BUILD_TYPE:=release
-EOF
-}
-
 
 githublogin="sileht"
 
