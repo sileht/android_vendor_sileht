@@ -40,7 +40,7 @@ function goroot(){
 function reposync(){
     pushd .repo/manifests/
     git fetch --all && \
-    git rebase cyanogen/eclair-ds && \
+    git rebase cyanogen/froyo && \
     git push sileht --force && \
     popd >/dev/null 
     repo sync 
@@ -97,7 +97,7 @@ setuprepo(){
     fi
 
     branch=$(grep "$repo" .repo/manifest.xml | sed -n -e 's@.*revision="\([^"]*\)".*@\1@gp')
-    [ -z "$branch" ] && branch="eclair"
+    [ -z "$branch" ] && branch="froyo"
 
     reporemote=$(grep "$repo" .repo/manifest.xml | sed -n -e 's@.*remote="\([^"]*\)".*@\1@gp')
     [ -z "$reporemote" ] && reporemote="korg"
