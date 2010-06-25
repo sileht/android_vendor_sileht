@@ -29,7 +29,7 @@ PRODUCT_BRAND := htc
 PRODUCT_DEVICE := sapphire
 PRODUCT_MODEL := Full Android on Sapphire By Sileht
 PRODUCT_MANUFACTURER := HTC
-PRODUCT_BUILD_PROP_OVERRIDES += BUILD_ID=FRF83 BUILD_DISPLAY_ID=FRF83 PRODUCT_NAME=passion BUILD_FINGERPRINT=/passion/passion/mahimahi:2.2/FRF83/42295:user/release-keys
+PRODUCT_BUILD_PROP_OVERRIDES += BUILD_ID=FRF83 BUILD_DISPLAY_ID=FRF83 PRODUCT_NAME=passion BUILD_FINGERPRINT=google/passion/passion/mahimahi:2.2/FRF83/42295:user/release-keys
 PRIVATE_BUILD_DESC="passion-user 2.2 FRF83 42295 release-keys"
 
 PRODUCT_PROPERTY_OVERRIDES := \
@@ -42,8 +42,8 @@ PRODUCT_PROPERTY_OVERRIDES := \
 	ro.ril.hsupa.category=5 \
 	ro.ril.enable.3g.prefix=1
 
-PRODUCT_PACKAGES := \
-	ADWLauncher
+#PRODUCT_PACKAGES := \
+#	ADWLauncher
 
 
 #ro.ril.htcmaskw1.bitmask = 4294967295 \
