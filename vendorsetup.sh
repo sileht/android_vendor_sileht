@@ -26,10 +26,8 @@ add_lunch_combo sileht_sapphire-userdebug
 
 [ -z "$PS1" ] && return
 
-if [ -z "$JAVA_HOME" ]; then
-    export JAVA_HOME=/home/prout/workspace/android/jdk1.5.0_22/
-    export PATH=$JAVA_HOME/bin:$PATH
-fi
+export JAVA_HOME=/home/prout/workspace/android/jdk1.5.0_22/
+export PATH=$JAVA_HOME/bin:$PATH
 
 githublogin="sileht"
 
@@ -63,7 +61,7 @@ function fbuild(){
     buildvariant="$1"
     [ -z "$buildvariant" ] && buildvariant="eng"
     . build/envsetup.sh
-	lunch sileht_dream_sapphire-$buildvariant
+	lunch sileht_sapphire-$buildvariant
     make -j4 it
 }
 
