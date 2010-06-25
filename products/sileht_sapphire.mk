@@ -21,14 +21,8 @@ $(call inherit-product, $(SRC_TARGET_DIR)/product/full.mk)
 
 $(call inherit-product, vendor/cyanogen/products/common.mk)
 
-# Discard inherited values and use our own instead.
-PRODUCT_NAME := full_sapphire
-PRODUCT_DEVICE := sapphire
-PRODUCT_MODEL := Full Android on Sapphire
-
-
-USE_CAMERA_STUB := false
-#WITH_JIT := true
+#USE_CAMERA_STUB := false
+WITH_JIT := true
 
 PRODUCT_NAME := sileht_sapphire
 PRODUCT_BRAND := htc
