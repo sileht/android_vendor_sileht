@@ -73,13 +73,12 @@ myrepos(){
     for repo in $repos; do
     	[ ! -d $repo ] && continue
     	pushd $repo
-    	git remote -v | grep "^github.*$githublogin" >/dev/null
-        if [ $? -eq 0 ]; then
-            branch=$(git remote | grep automerge | sed 's/^automerge#//g')
+		remote=$(git remote -v | grep --color=no "^github.*$githublogin.*fetch" | awk '{print $2}' | awk -F/ '{print $5}')
+        if [ -n "$remote" ]; then
+            automerge=$(git remote | grep automerge | sed 's/^automerge#//g')
 			flags=
-			[ -n "$branch" ] && flags="[M]"
-			echo -n "$repo $flags: "
-			git remote -v | grep --color=no "^github.*$githublogin.*fetch"
+			[ -n "$automerge" ] && flags="[M]"
+			printf '%6s %20s : %s\n' "$flags" "$repo" "$remote"
 		fi
 		popd
 	done
