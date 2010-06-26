@@ -36,8 +36,8 @@ githublogin="sileht"
 function reposync(){
     pushd .repo/manifests/
     git fetch --all && \
-    git rebase cyanogen/froyo && \
-    git push sileht --force && \
+    git merge cyanogen/froyo && \
+    git push sileht && \
     popd >/dev/null 
     repo sync 
 }
@@ -68,8 +68,9 @@ function fallstep(){
 	fbuild
 }
 
-function automerge(){
-	repos="$1"
+function automergeorrebase(){
+	cmd="$1"
+	repos="$2"
 	[ -z "$repos" ] && repos=($(sed -n -e 's/<project path="\([^"]*\)".*/\1/gp' .repo/manifest.xml))
     for repo in $repos; do
         [ ! -d $repo ] && continue
@@ -82,11 +83,19 @@ function automerge(){
                 echo -ne "* Checking for repo $repo: "
                 echo "$branch"
                 git fetch $remote
-                git rebase $remote/$branch && git push $githublogin --force
+                git $cmd $remote/$branch && git push $githublogin --force
             fi
         fi
         popd >/dev/null
     done
+}
+
+function autorebase(){
+	automergeorrebase rebase "$1"
+}
+
+function automerge(){
+	automergeorrebase merge "$1"
 }
 
 
