@@ -68,6 +68,23 @@ function fallstep(){
 	fbuild
 }
 
+myrepos(){
+	repos=($(sed -n -e 's/<project path="\([^"]*\)".*/\1/gp' .repo/manifest.xml))
+    for repo in $repos; do
+    	[ ! -d $repo ] && continue
+    	pushd $repo
+    	git remote -v | grep "^github.*$githublogin" >/dev/null
+        if [ $? -eq 0 ]; then
+            branch=$(git remote | grep automerge | sed 's/^automerge#//g')
+			flags=
+			[ -n "$branch" ] && flags="[M]"
+			echo -n "$repo $flags: "
+			git remote -v | grep --color=no "^github.*$githublogin.*fetch"
+		fi
+		popd
+	done
+}
+
 function automergeorrebase(){
 	cmd="$1"
 	repos="$2"
