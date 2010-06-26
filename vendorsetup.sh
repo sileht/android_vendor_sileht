@@ -28,12 +28,10 @@ add_lunch_combo sileht_sapphire-userdebug
 
 export JAVA_HOME=/home/prout/workspace/android/jdk1.5.0_22/
 export PATH=$JAVA_HOME/bin:$PATH
+export USE_CCACHE=1
+
 
 githublogin="sileht"
-
-function goroot(){
-	cd ~/workspace/android/mydroid/
-}
 
 function reposync(){
     pushd .repo/manifests/
@@ -63,6 +61,11 @@ function fbuild(){
     . build/envsetup.sh
 	lunch sileht_sapphire-$buildvariant
     make -j4 it
+}
+
+function fallstep(){
+	fprep
+	fbuild
 }
 
 function automerge(){
