@@ -22,7 +22,6 @@ $(call inherit-product, $(SRC_TARGET_DIR)/product/full.mk)
 $(call inherit-product, vendor/cyanogen/products/common.mk)
 
 #USE_CAMERA_STUB := false
-WITH_JIT := true
 
 PRODUCT_NAME := sileht_sapphire
 PRODUCT_BRAND := htc
