@@ -76,7 +76,9 @@ myrepos(){
     for repo in $repos; do
     	[ ! -d $repo ] && continue
     	pushd $repo
-		remote=$(git remote -v | egrep --color=no "^(github.*$filter.*fetch|automerge)" | tail -1 | awk '{print $2}' | awk -F/ '{print $4"/"$5}')
+		remote=$(git remote -v | egrep --color=no "^github.*$filter.*fetch" | tail -1 | awk '{print $2}' | awk -F/ '{print $4"/"$5}')
+		automerge=$(git remote -v | egrep --color=no "^automerge" | tail -1 | awk '{print $2}' | awk -F/ '{print $4"/"$5}')
+		[ -z "$remote" -a -n "$automerge" ] && remote=$(git remote -v | egrep --color=no "^github.*fetch" | tail -1 | awk '{print $2}' | awk -F/ '{print $4"/"$5}')
         if [ -n "$remote" ]; then
 			flag1=
 			flag2=
@@ -84,7 +86,8 @@ myrepos(){
             git remote | grep automerge >/dev/null && flag1="M"
 			git diff --no-ext-diff --ignore-submodules --quiet --exit-code || flag2="¹"
 			git diff-index --cached --quiet --ignore-submodules HEAD || flag3="²"
-			printf '%35s [%1s%1s%1s] : %s\n' "$repo" "$flag1" "$flag2" "$flag3" "$remote"
+			[ -n "$automerge" ] && automerge=" -> $automerge"
+			printf '%35s [%1s%1s%1s] : %s%s\n' "$repo" "$flag1" "$flag2" "$flag3" "$remote" "$automerge"
 		fi
 		popd
 	done 
