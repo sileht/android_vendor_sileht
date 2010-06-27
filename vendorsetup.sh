@@ -57,7 +57,7 @@ function fprep(){
 }
 function fbuild(){
     buildvariant="$1"
-    [ -z "$buildvariant" ] && buildvariant="eng"
+    [ -z "$buildvariant" ] && buildvariant="userdebug"
     . build/envsetup.sh
 	lunch sileht_sapphire-$buildvariant
     make -j4 it
