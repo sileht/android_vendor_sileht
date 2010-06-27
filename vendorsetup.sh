@@ -20,7 +20,7 @@
 # In particular, you can add lunch options with the add_lunch_combo
 # function: add_lunch_combo generic-eng
 
-add_lunch_combo sileht_sapphire-eng
+#add_lunch_combo sileht_sapphire-eng
 add_lunch_combo sileht_sapphire-userdebug
 
 
@@ -69,22 +69,29 @@ function fallstep(){
 }
 
 myrepos(){
+	T=$(gettop)
+	[ -n "$T" ] && pushd $T
+	filter="$1"
+	[ -z "$filter" ] && filter="sileht"
+	[ "$filter" = "-a" ] && filter=""
 	repos=($(sed -n -e 's/<project path="\([^"]*\)".*/\1/gp' .repo/manifest.xml))
     for repo in $repos; do
     	[ ! -d $repo ] && continue
     	pushd $repo
-		remote=$(git remote -v | grep --color=no "^github.*$githublogin.*fetch" | awk '{print $2}' | awk -F/ '{print $5}')
+		remote=$(git remote -v | egrep --color=no "^(github.*$filter.*fetch|automerge)" | head -1 | awk '{print $2}' | awk -F/ '{print $4"/"$5}')
         if [ -n "$remote" ]; then
-            automerge=$(git remote | grep automerge | sed 's/^automerge#//g')
 			flags=
-			[ -n "$automerge" ] && flags="[M]"
-			printf '%6s %20s : %s\n' "$flags" "$repo" "$remote"
+            git remote | grep automerge >/dev/null && flags="[M]"
+			printf '%35s %3s: %s\n' "$repo" "$flags" "$remote"
 		fi
 		popd
-	done
+	done 
+	[ -n "$T" ] && popd 2>/dev/null
 }
 
 function automergeorrebase(){
+	T=$(gettop)
+	[ -n "$T" ] && pushd $T
 	cmd="$1"
 	repos="$2"
 	[ -z "$repos" ] && repos=($(sed -n -e 's/<project path="\([^"]*\)".*/\1/gp' .repo/manifest.xml))
@@ -102,8 +109,9 @@ function automergeorrebase(){
                 git $cmd $remote/$branch && git push $githublogin --force
             fi
         fi
-        popd >/dev/null
+        popd
     done
+	[ -n "$T" ] && popd 2>/dev/null
 }
 
 function autorebase(){
