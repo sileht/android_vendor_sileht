@@ -19,39 +19,32 @@ $(call inherit-product, $(SRC_TARGET_DIR)/product/languages_small.mk)
 $(call inherit-product, device/htc/sapphire/device_sapphire_eu.mk)
 $(call inherit-product, $(SRC_TARGET_DIR)/product/full.mk)
 
+# Inherit some common cyanogenmod stuff.
 $(call inherit-product, vendor/cyanogen/products/common.mk)
 
-#USE_CAMERA_STUB := false
+TARGET_KERNEL_DIR=kernel
+TARGET_KERNEL_CONFIG=cyanogen_msm_defconfig
 
+USE_CAMERA_STUB := false
 PRODUCT_NAME := sileht_sapphire
 PRODUCT_BRAND := htc
 PRODUCT_DEVICE := sapphire
-PRODUCT_MODEL := Full Android on Sapphire By Sileht
+PRODUCT_MODEL := HTC Magic (Sileht)
 PRODUCT_MANUFACTURER := HTC
-PRODUCT_BUILD_PROP_OVERRIDES += BUILD_ID=FRF83 BUILD_DISPLAY_ID=FRF83 PRODUCT_NAME=passion BUILD_FINGERPRINT=google/passion/passion/mahimahi:2.2/FRF83/42295:user/release-keys
-PRIVATE_BUILD_DESC="passion-user 2.2 FRF83 42295 release-keys"
+PRODUCT_BUILD_PROP_OVERRIDES += BUILD_ID=FRF83 BUILD_DISPLAY_ID=FRF83 PRODUCT_NAME=passion BUILD_FINGERPRINT=google/passion/passion/mahimahi:2.2/FRF83/42295:user/release-keys PRIVATE_BUILD_DESC="passion-user 2.2 FRF83 42295 release-keys"
+
 
 PRODUCT_PROPERTY_OVERRIDES += \
     ro.ril.hsxpa=2 \
-    ro.ril.gprsclass=12 \
+	ro.ril.gprsclass=12 \
 	ro.ril.hep=1 \
 	ro.ril.enable.dtm=1 \
 	ro.ril.enable.a53=1 \
 	ro.ril.hsdpa.category=8 \
 	ro.ril.hsupa.category=5 \
 	ro.ril.enable.3g.prefix=1
-
-#PRODUCT_PACKAGES := \
-#	ADWLauncher
-
-
 #ro.ril.htcmaskw1.bitmask = 4294967295 \
 #ro.ril.htcmaskw1 = 14449 \
-
-
-#PRODUCT_LOCALES:=\
-#        en_US \
-#        fr_FR
 
 PRODUCT_COPY_FILES += \
     vendor/sileht/prebuilt/common/etc/bashrc:system/etc/bashrc \
@@ -67,7 +60,6 @@ VERSION_INDEX := $(shell i=$$(ls -1 $(TARGET_ZIP)*-signed.zip 2>/dev/null | sed 
 
 PRODUCT_PROPERTY_OVERRIDES += \
             ro.modversion=CyanogenMod-$(CVERSION)$(VERSION_INDEX)
-            #dalvik.vm.execution-mode=int:jit \
 
 FINAL_TARGET_ZIP := $(TARGET_ZIP)$(VERSION_INDEX)-signed.zip
 
