@@ -69,8 +69,6 @@ function fallstep(){
 }
 
 myrepos(){
-	T=$(gettop)
-	[ -n "$T" ] && pushd $T
 	filter="$1"
 	[ -z "$filter" ] && filter="sileht"
 	[ "$filter" = "-a" ] && filter=""
@@ -78,20 +76,21 @@ myrepos(){
     for repo in $repos; do
     	[ ! -d $repo ] && continue
     	pushd $repo
-		remote=$(git remote -v | egrep --color=no "^(github.*$filter.*fetch|automerge)" | head -1 | awk '{print $2}' | awk -F/ '{print $4"/"$5}')
+		remote=$(git remote -v | egrep --color=no "^(github.*$filter.*fetch|automerge)" | tail -1 | awk '{print $2}' | awk -F/ '{print $4"/"$5}')
         if [ -n "$remote" ]; then
-			flags=
-            git remote | grep automerge >/dev/null && flags="[M]"
-			printf '%35s %3s: %s\n' "$repo" "$flags" "$remote"
+			flag1=
+			flag2=
+			flag3=
+            git remote | grep automerge >/dev/null && flag1="M"
+			git diff --no-ext-diff --ignore-submodules --quiet --exit-code || flag2="¹"
+			git diff-index --cached --quiet --ignore-submodules HEAD || flag3="²"
+			printf '%35s [%1s%1s%1s] : %s\n' "$repo" "$flag1" "$flag2" "$flag3" "$remote"
 		fi
 		popd
 	done 
-	[ -n "$T" ] && popd 2>/dev/null
 }
 
 function automergeorrebase(){
-	T=$(gettop)
-	[ -n "$T" ] && pushd $T
 	cmd="$1"
 	repos="$2"
 	[ -z "$repos" ] && repos=($(sed -n -e 's/<project path="\([^"]*\)".*/\1/gp' .repo/manifest.xml))
@@ -111,7 +110,6 @@ function automergeorrebase(){
         fi
         popd
     done
-	[ -n "$T" ] && popd 2>/dev/null
 }
 
 function autorebase(){
