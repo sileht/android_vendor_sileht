@@ -15,17 +15,14 @@
 #
 
 # Inherit from those products. Most specific first.
-$(call inherit-product, $(SRC_TARGET_DIR)/product/languages_small.mk)
-$(call inherit-product, device/htc/sapphire/device_sapphire_eu.mk)
-$(call inherit-product, $(SRC_TARGET_DIR)/product/full.mk)
+$(call inherit-product, device/htc/sapphire/full_sapphire.mk)
 
 # Inherit some common cyanogenmod stuff.
 $(call inherit-product, vendor/cyanogen/products/common.mk)
 
-TARGET_KERNEL_DIR=kernel
-TARGET_KERNEL_CONFIG=cyanogen_msm_defconfig
+TARGET_KERNEL_DIR := kernel
+TARGET_KERNEL_CONFIG := cyanogen_msm_defconfig
 
-USE_CAMERA_STUB := false
 PRODUCT_NAME := sileht_sapphire
 PRODUCT_BRAND := htc
 PRODUCT_DEVICE := sapphire
@@ -34,7 +31,7 @@ PRODUCT_MANUFACTURER := HTC
 PRODUCT_BUILD_PROP_OVERRIDES += BUILD_ID=FRF83 BUILD_DISPLAY_ID=FRF83 PRODUCT_NAME=passion BUILD_FINGERPRINT=google/passion/passion/mahimahi:2.2/FRF83/42295:user/release-keys PRIVATE_BUILD_DESC="passion-user 2.2 FRF83 42295 release-keys"
 
 
-PRODUCT_PROPERTY_OVERRIDES += \
+PRODUCT_PROPERTY_OVERRIDES := \
     ro.ril.hsxpa=2 \
 	ro.ril.gprsclass=12 \
 	ro.ril.hep=1 \
@@ -42,7 +39,9 @@ PRODUCT_PROPERTY_OVERRIDES += \
 	ro.ril.enable.a53=1 \
 	ro.ril.hsdpa.category=8 \
 	ro.ril.hsupa.category=5 \
-	ro.ril.enable.3g.prefix=1
+	ro.ril.enable.3g.prefix=1 \
+
+
 #ro.ril.htcmaskw1.bitmask = 4294967295 \
 #ro.ril.htcmaskw1 = 14449 \
 
@@ -65,8 +64,8 @@ FINAL_TARGET_ZIP := $(TARGET_ZIP)$(VERSION_INDEX)-signed.zip
 
 $(FINAL_TARGET_ZIP): bacon
 	@echo "Finish $(FINAL_TARGET_ZIP)"
-	#./vendor/cyanogen/tools/squisher
-	#mv $$OUT/update-cm-$(CVERSION)$(VERSION_INDEX)-signed.zip $(FINAL_TARGET_ZIP)
+	./vendor/cyanogen/tools/squisher
+	mv $$OUT/update-cm-$(CVERSION)$(VERSION_INDEX)-signed.zip $(FINAL_TARGET_ZIP)
 
 
 it: $(FINAL_TARGET_ZIP)
