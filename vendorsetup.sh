@@ -77,7 +77,7 @@ myrepos(){
     	[ ! -d $repo ] && continue
     	pushd $repo
 		remote=$(git remote -v | egrep --color=no "^github.*$filter.*fetch" | tail -1 | awk '{print $2}' | awk -F/ '{print $4"/"$5}')
-		automerge=$(git remote -v | egrep --color=no "^automerge" | tail -1 | awk '{print $2}' | awk -F/ '{print $4"/"$5}')
+		automerge=$(git remote -v | egrep --color=no "^automerge" | tail -1 | awk '{print $2}')
 		[ -z "$remote" -a -n "$automerge" ] && remote=$(git remote -v | egrep --color=no "^github.*fetch" | tail -1 | awk '{print $2}' | awk -F/ '{print $4"/"$5}')
         if [ -n "$remote" ]; then
 			flag1=
