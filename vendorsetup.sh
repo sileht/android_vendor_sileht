@@ -76,7 +76,7 @@ myrepos(){
     for repo in $repos; do
     	[ ! -d $repo ] && continue
     	pushd $repo
-		remote=$(git remote -v | egrep --color=no "^github.*$filter.*fetch" | tail -1 | awk '{print $2}' | awk -F/ '{print $4"/"$5}')
+		remote=$({ git remote -v || echo "Error on: $repo" >&2 ; } | egrep --color=no "^github.*$filter.*fetch" | tail -1 | awk '{print $2}' | awk -F/ '{print $4"/"$5}')
 		automerge=$(git remote -v | egrep --color=no "^automerge" | tail -1 | awk '{print $2}')
 		[ -z "$remote" -a -n "$automerge" ] && remote=$(git remote -v | egrep --color=no "^github.*fetch" | tail -1 | awk '{print $2}' | awk -F/ '{print $4"/"$5}')
         if [ -n "$remote" ]; then
@@ -100,21 +100,23 @@ function automergeorrebase(){
     for repo in $repos; do
         [ ! -d $repo ] && continue
         pushd $repo
-        git remote -v | grep "^github.*$githublogin" >/dev/null
+        { git remote -v || echo "Error on: $repo" >&2 ; } | grep "^github.*$githublogin" >/dev/null
         if [ $? -eq 0 ]; then
-            branch=$(git remote | grep automerge | sed 's/^automerge#//g')
+            branch=$({ git remote || echo "Error on: $repo" >&2 ; } | grep automerge | sed 's/^automerge#//g')
             remote="automerge#$branch"
             if [ -n "$branch" ]; then
                 echo -ne "* Checking for repo $repo: "
                 echo "$branch"
                 git fetch $remote
-                git $cmd $remote/$branch && git push $githublogin --force
+                [ "$cmd" != "onlyfetch" ] && git $cmd $remote/$branch && git push $githublogin --force
             fi
         fi
         popd
     done
 }
-
+function autofetch(){
+	automergeorrebase fetchonly "$1"
+}
 function autorebase(){
 	automergeorrebase rebase "$1"
 }
