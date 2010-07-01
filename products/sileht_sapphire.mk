@@ -26,6 +26,7 @@ TARGET_KERNEL_CONFIG := cyanogen_msm_defconfig
 
 
 CVERSION := $(shell sed -n '/[[:space:]]*ro.modversion=CyanogenMod-/s///gp' vendor/cyanogen/products/cyanogen_sapphire.mk | tail -1)-mod
+TARGET_ZIP := update-sm-$(CVERSION)
 VERSION_INDEX := $(shell i=$$(ls -1 $(TARGET_ZIP)*-signed.zip 2>/dev/null | sed -n 's/$(TARGET_ZIP)\([[:digit:]]*\)-signed.zip/\1/gp' | sort -n | tail -1) ; echo $$((i+1)))
 
 
@@ -54,7 +55,6 @@ PRODUCT_COPY_FILES += \
 
 USE_CAMERA_STUB := false
 
-TARGET_ZIP := update-sm-$(CVERSION)
 FINAL_TARGET_ZIP := $(TARGET_ZIP)$(VERSION_INDEX)-signed.zip
 $(FINAL_TARGET_ZIP): bacon
 	@echo "Finish $(FINAL_TARGET_ZIP)"
