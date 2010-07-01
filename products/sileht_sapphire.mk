@@ -14,6 +14,7 @@
 # limitations under the License.
 #
 
+
 # Inherit from those products. Most specific first.
 $(call inherit-product, device/htc/sapphire/full_sapphire.mk)
 
@@ -43,22 +44,18 @@ PRODUCT_PROPERTY_OVERRIDES += \
 	ro.ril.enable.a53=1 \
 	ro.ril.hsdpa.category=8 \
 	ro.ril.hsupa.category=5 \
-	ro.ril.enable.3g.prefix=1 \
+	ro.ril.enable.3g.prefix=1
 #	ro.ril.htcmaskw1.bitmask = 4294967295 \
 #	ro.ril.htcmaskw1 = 14449 \
 
 PRODUCT_COPY_FILES += \
     vendor/sileht/prebuilt/common/etc/bashrc:system/etc/bashrc \
-	vendor/cyanogen/prebuilt/sapphire/media/bootanimation.zip:system/media/bootanimation.zip \
+	vendor/cyanogen/prebuilt/dream-sapphire/media/bootanimation.zip:system/media/bootanimation.zip \
 
 USE_CAMERA_STUB := false
 
-
-
-
 TARGET_ZIP := update-sm-$(CVERSION)
 FINAL_TARGET_ZIP := $(TARGET_ZIP)$(VERSION_INDEX)-signed.zip
-
 $(FINAL_TARGET_ZIP): bacon
 	@echo "Finish $(FINAL_TARGET_ZIP)"
 	./vendor/cyanogen/tools/squisher
