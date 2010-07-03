@@ -93,7 +93,7 @@ myrepos(){
 	done 
 }
 
-function automergeorrebase(){
+function list_fetch_and_exec(){
 	cmd="$1"
 	repos="$2"
 	[ -z "$repos" ] && repos=($(sed -n -e 's/<project path="\([^"]*\)".*/\1/gp' .repo/manifest.xml))
@@ -108,21 +108,35 @@ function automergeorrebase(){
                 echo -ne "* Checking for repo $repo: "
                 echo "$branch"
                 git fetch $remote
-                [ "$cmd" != "onlyfetch" ] && git $cmd $remote/$branch && git push $githublogin --force
+                case $cmd in
+                    merge|rebase)
+                        git $cmd $remote/$branch && git push $githublogin --force
+                        ;;
+                    diff)
+                        git $cmd $remote/$branch
+                        ;;
+                    onlyfetch)
+                        ;;
+                    *)
+                        ;;
+                esac
             fi
         fi
         popd
     done
 }
+function autodiff(){
+    list_fetch_and_exec diff "$1"
+}
 function autofetch(){
-	automergeorrebase fetchonly "$1"
+	list_fetch_and_exec fetchonly "$1"
 }
 function autorebase(){
-	automergeorrebase rebase "$1"
+	list_fetch_and_exec rebase "$1"
 }
 
 function automerge(){
-	automergeorrebase merge "$1"
+	list_fetch_and_exec merge "$1"
 }
 
 
