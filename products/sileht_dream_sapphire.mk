@@ -7,8 +7,15 @@ CYANOGEN_WITH_GOOGLE := true
 # Inherit some common cyanogenmod stuff.
 $(call inherit-product, vendor/cyanogen/products/common.mk)
 
-TARGET_KERNEL_DIR := kernel-msm
-TARGET_KERNEL_CONFIG := cyanogen_msm_defconfig
+# Include GSM-only stuff
+$(call inherit-product, vendor/cyanogen/products/gsm.mk)
+
+PRODUCT_SPECIFIC_DEFINES += TARGET_PRELINKER_MAP=$(TOP)/vendor/cyanogen/prelink-linux-arm-ds.map
+
+# Build kernel
+PRODUCT_SPECIFIC_DEFINES += TARGET_PREBUILT_KERNEL=
+PRODUCT_SPECIFIC_DEFINES += TARGET_KERNEL_DIR=kernel-msm
+PRODUCT_SPECIFIC_DEFINES += TARGET_KERNEL_CONFIG=cyanogen_msm_defconfig
 
 CVERSION := $(shell sed -n '/[[:space:]]*ro.modversion=CyanogenMod-/s///gp' vendor/cyanogen/products/cyanogen_dream_sapphire.mk| tail -1)-mod
 TARGET_ZIP := update-sm-$(CVERSION)
@@ -19,10 +26,8 @@ PRODUCT_BRAND := google
 PRODUCT_DEVICE := dream_sapphire
 PRODUCT_MODEL := HTC Magic (Sileht)
 PRODUCT_MANUFACTURER := HTC
-PRODUCT_BUILD_PROP_OVERRIDES += BUILD_ID=FRF91 BUILD_DISPLAY_ID=FRF91 PRODUCT_NAME=sapphire BUILD_FINGERPRINT=google/passion/passion/mahimahi:2.2/FRF91/43546:user/release-keys TARGET_BUILD_TYPE=userdebug
+PRODUCT_BUILD_PROP_OVERRIDES += BUILD_ID=FRF91 BUILD_DISPLAY_ID=FRF91 PRODUCT_NAME=sapphire BUILD_FINGERPRINT=google/passion/passion/mahimahi:2.2/FRF91/43546:user/release-keys TARGET_BUILD_TYPE=userdebug BUILD_VERSION_TAGS=release-keys
 PRIVATE_BUILD_DESC="sapphire-user 2.2 FRF91 43546 release-keys"
-
-PRODUCT_SPECIFIC_DEFINES += TARGET_PRELINKER_MAP=$(TOP)/vendor/cyanogen/prelink-linux-arm-ds.map
 
 PRODUCT_PROPERTY_OVERRIDES += \
     ro.modversion=CyanogenMod-$(CVERSION)$(VERSION_INDEX) \
