@@ -2,7 +2,7 @@
 $(call inherit-product, device/htc/dream_sapphire/full_dream_sapphire.mk)
 
 DEFAULT_LAUNCHER := true
-CYANOGEN_WITH_GOOGLE := true
+#CYANOGEN_WITH_GOOGLE := true
 
 # Inherit some common cyanogenmod stuff.
 $(call inherit-product, vendor/cyanogen/products/common.mk)
@@ -55,7 +55,6 @@ WITH_DS_HTCACOUSTIC_HACK := true
 
 # Use Windows Media
 WITH_WINDOWS_MEDIA := true
-
 
 PRODUCT_COPY_FILES += \
     vendor/sileht/prebuilt/common/etc/bashrc:system/etc/bashrc \
