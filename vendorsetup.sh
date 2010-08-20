@@ -21,12 +21,10 @@
 # function: add_lunch_combo generic-eng
 
 add_lunch_combo sileht_dream_sapphire-eng
-add_lunch_combo sileht_dream_sapphire-userdebug
-
 
 [ -z "$PS1" ] && return
 
-export JAVA_HOME=/home/prout/workspace/android/jdk1.6.0_20/
+export JAVA_HOME=$HOME/workspace/android/jdk1.6.0_20/
 export PATH=$JAVA_HOME/bin:$PATH
 export USE_CCACHE=1
 
