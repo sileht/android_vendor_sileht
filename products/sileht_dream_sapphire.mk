@@ -35,8 +35,9 @@ PRODUCT_PACKAGE_OVERLAYS += vendor/cyanogen/overlay/dream_sapphire
 PRODUCT_COPY_FILES += \
     vendor/cyanogen/prebuilt/dream_sapphire/etc/init.d/02audio_profile:system/etc/init.d/02audio_profile
 
-
+# Enable Compcache by default on D/S
 PRODUCT_PROPERTY_OVERRIDES += \
+    ro.compcache.default=1 \
 	ro.ril.hep=1 \
 	ro.ril.enable.dtm=1 \
 	ro.ril.enable.a53=1 \
@@ -57,7 +58,6 @@ else
     	ro.modversion=CyanogenMod-$(CVERSION)$(VERSION_INDEX)
 endif
 
-
 # Use the audio profile hack
 WITH_DS_HTCACOUSTIC_HACK := true
 
@@ -69,14 +69,12 @@ WITH_WINDOWS_MEDIA := true
 #
 PRODUCT_COPY_FILES +=  \
     vendor/cyanogen/prebuilt/mdpi/media/bootanimation.zip:system/media/bootanimation.zip \
-    vendor/cyanogen/prebuilt/dream_sapphire/etc/init.d/02audio_profile:system/etc/init.d/02audio_profile \
     vendor/cyanogen/prebuilt/dream_sapphire/etc/AudioPara_dream.csv:system/etc/AudioPara_dream.csv \
     vendor/cyanogen/prebuilt/dream_sapphire/etc/AudioPara_sapphire.csv:system/etc/AudioPara_sapphire.csv
 
 FINAL_TARGET_ZIP := $(TARGET_ZIP)$(VERSION_INDEX)-signed.zip
 $(FINAL_TARGET_ZIP): bacon
 	@echo "Finish $(FINAL_TARGET_ZIP)"
-	./vendor/cyanogen/tools/squisher
 	cp $${OUT}/update-cm-$(CVERSION)$(VERSION_INDEX)-signed.zip $(FINAL_TARGET_ZIP)
 
 it: $(FINAL_TARGET_ZIP)
