@@ -1,0 +1,6 @@
+#!/system/bin/sh
+
+log -p i -t tweaks "Setup swap ...";
+swapon /dev/block/mmcblk0p2
+sysctl -w vm.swappiness=40
+
