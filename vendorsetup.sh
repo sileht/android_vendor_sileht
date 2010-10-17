@@ -37,7 +37,7 @@ function reposync(){
     git merge cyanogen/froyo && \
     git push sileht && \
     popd >/dev/null 
-    repo sync 
+    repo sync -j16
 }
 
 function fclean(){
