@@ -32,7 +32,7 @@ PRODUCT_PACKAGE_OVERLAYS += vendor/cyanogen/overlay/dream_sapphire
 # This file is used to install the correct audio profile when booted
 PRODUCT_COPY_FILES += \
     vendor/cyanogen/prebuilt/dream_sapphire/etc/init.d/02audio_profile:system/etc/init.d/02audio_profile \
-    vendor/sileht/prebuilt/common/etc/init.d/30tweaks:system/etc/init.d/30tweaks
+    vendor/sileht/prebuilt/common/etc/init.d/06tweaks:system/etc/init.d/06tweaks
 
 # Enable Compcache by default on D/S
 PRODUCT_PROPERTY_OVERRIDES += \

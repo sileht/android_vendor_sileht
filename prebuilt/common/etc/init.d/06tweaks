@@ -1,0 +1,30 @@
+#!/system/bin/sh
+#
+# mount ext[234] partition from sd card
+
+BB="logwrapper busybox";
+
+# find first linux partition on SD card
+MMC=/dev/block/mmcblk0
+
+# wait for the device to settle
+COUNT=6;
+until [ -b "$MMC" ] || [ $COUNT -lt 1 ];
+do
+    sleep 1;
+    COUNT=$((COUNT-1));
+done;
+
+if [ -b "$MMC" ];
+then
+    FDISK="busybox fdisk"
+    PARTITION=`$FDISK -l $MMC | awk '/^\// && $5 == 82 {print $1;exit;}'`
+
+    if [ -b "$PARTITION" ];
+    then
+        log -p i -t tweaks "Enable swap..";
+        $BB swapon $PARTITION
+        $BB sysctl -w vm.swappiness=40 
+    fi
+fi
+
