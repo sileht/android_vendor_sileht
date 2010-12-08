@@ -26,7 +26,7 @@ add_lunch_combo sileht_dream_sapphire-eng
 
 export JAVA_HOME=$HOME/workspace/android/jdk1.6.0_22/
 export PATH=$JAVA_HOME/bin:$PATH
-#export USE_CCACHE=1
+export USE_CCACHE=1
 export CCACHE_DIR=$HOME/workspace/mydroid/ccache/
 
 githublogin="sileht"
