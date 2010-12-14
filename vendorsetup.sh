@@ -31,14 +31,14 @@ export CCACHE_DIR=$HOME/workspace/mydroid/ccache/
 
 githublogin="sileht"
 
-function reposync(){
+function msync(){
     pushd .repo/manifests/
     git pull && \
     git fetch --all && \
     git merge cyanogen/froyo && \
     git push sileht && \
     popd >/dev/null 
-    repo sync -j16
+    reposync
 }
 
 function fclean(){
@@ -51,7 +51,7 @@ function fprep(){
 	if [ "$1" == "-q" ]  ; then
 		repo sync && automerge
 	else
-		reposync && automerge
+		msync && automerge
 	fi
 }
 function fbuild(){

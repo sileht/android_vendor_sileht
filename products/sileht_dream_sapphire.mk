@@ -32,7 +32,6 @@ PRODUCT_PACKAGE_OVERLAYS += vendor/cyanogen/overlay/dream_sapphire
 # This file is used to install the correct audio profile when booted
 PRODUCT_COPY_FILES += \
     vendor/cyanogen/prebuilt/dream_sapphire/etc/init.d/02audio_profile:system/etc/init.d/02audio_profile
-#    vendor/sileht/prebuilt/common/etc/init.d/06tweaks:system/etc/init.d/06tweaks
 
 # Enable Compcache by default on D/S
 PRODUCT_PROPERTY_OVERRIDES += \
@@ -43,8 +42,6 @@ PRODUCT_PROPERTY_OVERRIDES += \
 	ro.ril.hsdpa.category=8 \
 	ro.ril.hsupa.category=5 \
 	ro.ril.enable.3g.prefix=1
-#	ro.ril.htcmaskw1.bitmask = 4294967295 \
-#	ro.ril.htcmaskw1 = 14449 \
 
 #
 # Set ro.modversion
