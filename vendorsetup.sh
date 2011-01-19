@@ -33,11 +33,7 @@ githublogin="sileht"
 
 function msync(){
     pushd .repo/manifests/
-	branch=$(git branch | grep '^\*' | awk '{print $2}')
-    git pull && \
-    git fetch --all && \
-    git merge cyanogen/$branch && \
-    git push sileht && \
+    git pull
     popd >/dev/null 
     reposync
 }
