@@ -19,7 +19,7 @@ PRODUCT_BRAND := google
 PRODUCT_DEVICE := dream_sapphire
 PRODUCT_MODEL := Dream/Sapphire
 PRODUCT_MANUFACTURER := HTC
-PRODUCT_BUILD_PROP_OVERRIDES += BUILD_ID=FRG83 BUILD_DISPLAY_ID=FRG83 BUILD_FINGERPRINT=tmobile/opal/sapphire/sapphire:2.2.1/FRG83/60505:user/release-keys PRIVATE_BUILD_DESC="opal-user 2.2.1 FRG83 60505 release-keys"
+PRODUCT_BUILD_PROP_OVERRIDES += BUILD_ID=FRG83 BUILD_DISPLAY_ID=GRH78 BUILD_FINGERPRINT=tmobile/opal/sapphire/sapphire:2.2.1/FRG83/60505:user/release-keys PRIVATE_BUILD_DESC="opal-user 2.2.1 FRG83 60505 release-keys"
 
 # Build kernel
 PRODUCT_SPECIFIC_DEFINES += TARGET_PREBUILT_KERNEL=
@@ -36,23 +36,14 @@ PRODUCT_COPY_FILES += \
 # Enable Compcache by default on D/S
 PRODUCT_PROPERTY_OVERRIDES += \
     ro.compcache.default=0 \
-	ro.ril.hep=1 \
-	ro.ril.enable.dtm=1 \
 	ro.ril.enable.a53=1 \
-	ro.ril.hsdpa.category=8 \
-	ro.ril.hsupa.category=5 \
 	ro.ril.enable.3g.prefix=1
 
 #
 # Set ro.modversion
 #
-ifdef CYANOGEN_NIGHTLY
-    PRODUCT_PROPERTY_OVERRIDES += \
-        ro.modversion=CyanogenMod-6-$(shell date +%m%d%Y)-NIGHTLY-DS
-else
-    PRODUCT_PROPERTY_OVERRIDES += \
+PRODUCT_PROPERTY_OVERRIDES += \
     	ro.modversion=CyanogenMod-$(CVERSION)$(VERSION_INDEX)
-endif
 
 # Use the audio profile hack
 WITH_DS_HTCACOUSTIC_HACK := true
