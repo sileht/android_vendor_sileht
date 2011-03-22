@@ -32,6 +32,7 @@ export CCACHE_DIR=$HOME/workspace/mydroid/ccache/
 githublogin="sileht"
 
 function msync(){
+    echo "* Save work"
 	grep stash patchlist | grep -v '^#' | while read dir cmd ; do
 		[ -z "$dir" ] && continue
 		pushd $dir
@@ -39,11 +40,15 @@ function msync(){
 		popd
 	done
 
+    echo
+    echo "* Sync cyanogen"
     pushd .repo/manifests/
     git pull
     popd >/dev/null 
     reposync
 
+    echo
+    echo "* Restore Work"
 	grep -v '^#' patchlist | while read dir cmd ; do
 		[ -z "$dir" ] && continue
 		pushd $dir

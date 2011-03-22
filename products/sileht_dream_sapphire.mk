@@ -1,5 +1,5 @@
 # Inherit AOSP device configuration for dream_sapphire.
-$(call inherit-product, device/htc/dream_sapphire/full_dream_sapphire_eu.mk)
+$(call inherit-product, device/htc/dream_sapphire/full_dream_sapphire.mk)
 
 # Inherit some common cyanogenmod stuff.
 $(call inherit-product, vendor/cyanogen/products/common.mk)
@@ -19,20 +19,28 @@ PRODUCT_BRAND := google
 PRODUCT_DEVICE := dream_sapphire
 PRODUCT_MODEL := Dream/Sapphire
 PRODUCT_MANUFACTURER := HTC
-PRODUCT_BUILD_PROP_OVERRIDES += BUILD_ID=FRG83 BUILD_DISPLAY_ID=GRH78C BUILD_FINGERPRINT=tmobile/opal/sapphire/sapphire:2.2.1/FRG83/60505:user/release-keys PRIVATE_BUILD_DESC="opal-user 2.2.1 FRG83 60505 release-keys"
+#PRODUCT_BUILD_PROP_OVERRIDES += BUILD_ID=FRG83 BUILD_DISPLAY_ID=GRH78C BUILD_FINGERPRINT=tmobile/opal/sapphire/sapphire:2.2.1/FRG83/60505:user/release-keys PRIVATE_BUILD_DESC="opal-user 2.2.1 FRG83 60505 release-keys"
+PRODUCT_BUILD_PROP_OVERRIDES += PRODUCT_NAME=dream_sapphire BUILD_ID=GRI40 BUILD_DISPLAY_ID=GRI40 BUILD_FINGERPRINT=google/passion/passion:2.3.3/GRI40/102588:user/release-keys PRIVATE_BUILD_DESC="passion-user 2.3.3 GRI40 102588 release-keys"
 
 # Extra DS overlay
 PRODUCT_PACKAGE_OVERLAYS += vendor/cyanogen/overlay/dream_sapphire
 
 # This file is used to install the correct audio profile when booted
 PRODUCT_COPY_FILES += \
-    vendor/cyanogen/prebuilt/dream_sapphire/etc/init.d/02audio_profile:system/etc/init.d/02audio_profile
+    vendor/cyanogen/prebuilt/dream_sapphire/etc/init.d/02audio_profile:system/etc/init.d/02audio_profile \
+    vendor/sileht/prebuilt/common/etc/init.d/07hsdpafix:system/etc/init.d/07hsdpafix
 
 # Enable Compcache by default on D/S
 PRODUCT_PROPERTY_OVERRIDES += \
-    ro.compcache.default=0 \
+	media.stagefright.enable-http=true \
+	media.stagefright.enable-meta=true \
+	media.stagefright.enable-player=true \
+	media.stagefright.enable-scan=true \
+    ro.compcache.default=18 \
 	ro.ril.enable.a53=1 \
-	ro.ril.enable.3g.prefix=1
+
+PRODUCT_PACKAGES += \
+	rzscontrol
 
 #
 # Set ro.modversion

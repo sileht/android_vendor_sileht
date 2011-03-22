@@ -1,0 +1,11 @@
+#!/system/bin/sh
+#
+# Workaround to fix hsdpa disconnetion
+#
+#
+
+isfixed="$(ps | grep ping)"
+if [ -z "$isfixed" ] ; then
+	nohup ping -i 5 1.1.1.1 >/dev/null 2>&1 &
+fi
+
