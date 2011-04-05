@@ -48,66 +48,82 @@ function bb(){
 function getzip(){
     last=$(ls -1 update-sm-*-signed.zip 2>/dev/null| sort -n | head -1 | sed -n 's/update-sm-\([[:digit:]]*\)-signed.zip/\1/g')
     new=$((last + 1))
-    mv out/target/product/vision/update-squished.zip update-sm-$new-signed.zip
+    mv out/target/product/vision/update-squished.zip update-sm-$new-signed.zip || exit 1
     rm -f out/target/product/vision/update-squished.zip.md5sum
     ls -la update-sm-$new-signed.zip
     md5sum update-sm-$new-signed.zip |tee update-sm-$new-signed.zip.md5sum
 }
 
-function msync(){
-    function check_repo() {
-        if [ -n "$stage2" ]; then
-            echo "repo \"$repo\" have staged changed, can't continue"
+function check_repo() {
+    if [ -n "$stage2" ]; then
+        echo "repo \"$repo\" have staged changed, can't continue"
+        return 1
+    fi
+    if [ -n "$autosyncflags" ]; then
+        echo -n "repo \"$repo\" have previous failed autosync"
+        if [ -z "$stage1" ] ; then
+            echo ", reapply it"
+            git stash pop || return 1
+        else
+            echo
             return 1
         fi
-        if [ -n "$autosyncflags" ]; then
-            echo -n "repo \"$repo\" have previous failed autosync"
-            if [ -z "$stage1" ] ; then
-                echo ", reapply it"
-                git stash pop || return 1
-            else
-                echo
-                return 1
-            fi
-        fi
-        return 0
-    }
+    fi
+    return 0
+}
 
-    function stash_save_repo(){
-        [ -n "$stage2" ] && return 1
-        if [ -n "$stage1" ]; then
-            echobold "** Stash change in $repo **"
-            git stash save autosync || return 1
-            echo
-        fi
-    }
+function stash_save_repo(){
+    [ -n "$stage2" ] && return 1
+    if [ -n "$stage1" ]; then
+        echobold "** Stash change in $repo **"
+        git stash save autosync || return 1
+        echo
+    fi
+}
 
-    function stash_restore_repo(){
-        if [ -n "$autosyncflags" ]; then
-            echobold "** Restore change in $repo **"
-            git stash pop || return 1
-            echo
-        fi
-    }
+function stash_restore_repo(){
+    if [ -n "$autosyncflags" ]; then
+        echobold "** Restore change in $repo **"
+        git stash pop || return 1
+        echo
+    fi
+}
 
-    function rebase_work(){
-        git branch | grep current-work > /dev/null && {
-            remote_name=$(git  remote -v | grep "$remote.*fetch" | awk '{print $1}')
+function rebase_work(){
+    git branch | grep current-work > /dev/null && {
+        remote_name=$(git  remote -v | grep "$remote.*fetch" | awk '{print $1}')
 
-            echobold "** Rebase $repo on $remote_name/$workingversion **"
+        echobold "** Rebase $repo on $remote_name/$workingversion **"
 
-            git checkout current-work
-            git rebase $remote_name/$workingversion && \
-            git push sileht current-work --force
+        git checkout current-work
+        git rebase $remote_name/$workingversion && \
+        git push sileht current-work --force
 
-            git branch | grep current-work-perso > /dev/null && {
-                git checkout current-work-perso
-                git rebase current-work && \
-                git push sileht current-work-perso --force
-            } || true
-            echo
+        git branch | grep current-work-perso > /dev/null && {
+            git checkout current-work-perso
+            git rebase current-work && \
+            git push sileht current-work-perso --force
         } || true
-    } 
+        echo
+    } || true
+}
+function upload_work(){
+    git branch | grep current-work > /dev/null && {
+        echobold "** Upload $repo on sileht **"
+        git checkout current-work
+        git push sileht current-work
+        git branch | grep current-work-perso > /dev/null && {
+            git checkout current-work-perso
+            git push sileht current-work-perso
+        }
+    }
+}
+function myupload(){
+    myrepos --hook upload_work
+}
+
+function msync(){
+
 
     echobold "** Checking repos... **"
     myrepos --hook check_repo || return
