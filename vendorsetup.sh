@@ -20,98 +20,164 @@
 # In particular, you can add lunch options with the add_lunch_combo
 # function: add_lunch_combo generic-eng
 
-add_lunch_combo sileht_dream_sapphire-eng
-
 [ -z "$PS1" ] && return
 
 export JAVA_HOME=$HOME/workspace/android/jdk1.6.0_22/
 export PATH=$JAVA_HOME/bin:$PATH
 export USE_CCACHE=1
 export CCACHE_DIR=$HOME/workspace/mydroid/ccache/
+export CYANOGEN_NIGHTLY=true
 
 githublogin="sileht"
+workingversion="gingerbread"
+
+echobold(){
+    echo -e "\033[1m$@\033[0m"
+}
+
+function bb(){
+	[ ! -d .repo ] && echo 'Not root dir' && return
+    [ "$1" = "-s" ] && msync
+    find out -name \*.prop | xargs rm -f ;
+    bib vision -p
+    mka bacon
+    getzip
+}
+
+
+function getzip(){
+    last=$(ls -1 update-sm-*-signed.zip 2>/dev/null| sort -n | head -1 | sed -n 's/update-sm-\([[:digit:]]*\)-signed.zip/\1/g')
+    new=$((last + 1))
+    mv out/target/product/vision/update-squished.zip update-sm-$new-signed.zip
+    rm -f out/target/product/vision/update-squished.zip.md5sum
+    ls -la update-sm-$new-signed.zip
+    md5sum update-sm-$new-signed.zip |tee update-sm-$new-signed.zip.md5sum
+}
 
 function msync(){
-    echo "* Save work"
-	grep stash patchlist | grep -v '^#' | while read dir cmd ; do
-		[ -z "$dir" ] && continue
-		pushd $dir
-		git stash
-		popd
-	done
+    function check_repo() {
+        if [ -n "$stage2" ]; then
+            echo "repo \"$repo\" have staged changed, can't continue"
+            return 1
+        fi
+        if [ -n "$autosyncflags" ]; then
+            echo -n "repo \"$repo\" have previous failed autosync"
+            if [ -z "$stage1" ] ; then
+                echo ", reapply it"
+                git stash pop || return 1
+            else
+                echo
+                return 1
+            fi
+        fi
+        return 0
+    }
 
+    function stash_save_repo(){
+        [ -n "$stage2" ] && return 1
+        if [ -n "$stage1" ]; then
+            echobold "** Stash change in $repo **"
+            git stash save autosync || return 1
+            echo
+        fi
+    }
+
+    function stash_restore_repo(){
+        if [ -n "$autosyncflags" ]; then
+            echobold "** Restore change in $repo **"
+            git stash pop || return 1
+            echo
+        fi
+    }
+
+    function rebase_work(){
+        git branch | grep current-work > /dev/null && {
+            remote_name=$(git  remote -v | grep "$remote.*fetch" | awk '{print $1}')
+
+            echobold "** Rebase $repo on $remote_name/$workingversion **"
+
+            git checkout current-work
+            git rebase $remote_name/$workingversion && \
+            git push sileht current-work --force
+
+            git branch | grep current-work-perso > /dev/null && {
+                git checkout current-work-perso
+                git rebase current-work && \
+                git push sileht current-work-perso --force
+            } || true
+            echo
+        } || true
+    } 
+
+    echobold "** Checking repos... **"
+    myrepos --hook check_repo || return
     echo
-    echo "* Sync cyanogen"
-    pushd .repo/manifests/
-    git pull
-    popd >/dev/null 
+    myrepos --hook stash_save_repo || return
     reposync
-
     echo
-    echo "* Restore Work"
-	grep -v '^#' patchlist | while read dir cmd ; do
-		[ -z "$dir" ] && continue
-		pushd $dir
-		git $(echo $cmd)
-		popd
-	done
-}
+    myrepos --hook rebase_work || return
+    myrepos --hook stash_restore_repo || return
 
-function fclean(){
-	[ ! -d .repo ] && echo 'Not root dir' && return
-    find out -name \*.prop | xargs rm -f ;
-}
-
-function fprep(){
-    fclean
-	if [ "$1" == "-q" ]  ; then
-		repo sync && automerge
-	else
-		msync && automerge
-	fi
-}
-function fbuild(){
-    buildvariant="$1"
-    [ -z "$buildvariant" ] && buildvariant="userdebug"
-    . build/envsetup.sh
-	lunch sileht_sapphire-$buildvariant
-    make -j4 it
-}
-
-function fallstep(){
-	fprep
-	fbuild
+    return
 }
 
 myrepos(){
-	filter="$1"
-	[ -z "$filter" ] && filter="sileht"
-	[ "$filter" = "-a" ] && filter=""
-	repos=($(sed -n -e 's/<project path="\([^"]*\)".*/\1/gp' .repo/manifest.xml))
+    all=
+    hook=
+    if [ "$1" = "-a" ]; then
+        all=1
+        shift
+    fi
+    if [ "$1" = "--hook" ]; then
+        shift
+        hook=$@
+    fi
+
+	repos=($(sed -n -e 's/<project .*path="\([^"]*\)".*/\1/gp' .repo/manifest.xml .repo/local_manifest.xml))
     for repo in $repos; do
     	[ ! -d $repo ] && continue
     	pushd $repo
-		remote=$({ git remote -v || echo "Error on: $repo" >&2 ; } | egrep --color=no "^github.*$filter.*fetch" | tail -1 | awk '{print $2}' | awk -F/ '{print $4"/"$5}')
-		automerge=$(git remote -v | egrep --color=no "^automerge" | tail -1 | awk '{print $2}')
-		[ -z "$remote" -a -n "$automerge" ] && remote=$(git remote -v | egrep --color=no "^github.*fetch" | tail -1 | awk '{print $2}' | awk -F/ '{print $4"/"$5}')
-        if [ -n "$remote" ]; then
-			flag1=
-			flag2=
-			flag3=
-            git remote | grep automerge >/dev/null && flag1="M"
-			git diff --no-ext-diff --ignore-submodules --quiet --exit-code || flag2="¹"
-			git diff-index --cached --quiet --ignore-submodules HEAD || flag3="²"
-			[ -n "$automerge" ] && automerge=" -> $automerge"
-			printf '%35s [%1s%1s%1s] : %s%s\n' "$repo" "$flag1" "$flag2" "$flag3" "$remote" "$automerge"
+        if [ -n "$all" -o -d .git/refs/remotes/sileht ]; then
+			curhead=
+			stage1=
+			stage2=
+            autosyncflags=
+
+            remote=$(git remote -v | grep ^github.*fetch.* | awk '{print $2}')
+            [ -z "$remote" ] && remote=$(git remote -v | grep ^korg.*fetch.* | awk '{print $2}')
+            [ -z "$remote" ] && remote=$(git remote -v | grep ^origin.*fetch.* | awk '{print $2}')
+            [ -z "$remote" ] && remote=$(git remote -v | grep ^sileht.*fetch.* | awk '{print $2}')
+
+
+            [ -e .git/refs/heads/current-work ] && curhead="C"
+            [ -e .git/refs/heads/current-work-perso ] && curhead="P"
+
+            git stash list | grep autosync >/dev/null && autosyncflags="F"
+
+			git diff --no-ext-diff --ignore-submodules --quiet --exit-code || stage1="¹"
+			git diff-index --cached --quiet --ignore-submodules HEAD || stage2="²"
+
+            if [ -z "$hook" ]; then
+    			printf '%35s [%1s%1s%1s%1s] : %s%s\n' "$repo" "$curhead" "$stage1" "$stage2" "$autosyncflags" "$remote"
+            else
+                $hook
+                ret=$?
+                if [ $ret -ne 0 ]; then
+                    popd
+                    return $ret
+                fi
+            fi
 		fi
 		popd
 	done 
 }
 
+return
+
 function list_fetch_and_exec(){
 	cmd="$1"
 	repos="$2"
-	[ -z "$repos" ] && repos=($(sed -n -e 's/<project path="\([^"]*\)".*/\1/gp' .repo/manifest.xml))
+	[ -z "$repos" ] && repos=($(sed -n -e 's/<project .*path="\([^"]*\)".*/\1/gp' .repo/manifest.xml .repo/local_manifest.xml))
     for repo in $repos; do
         [ ! -d $repo ] && continue
         pushd $repo
@@ -154,7 +220,9 @@ function automerge(){
 	list_fetch_and_exec merge "$1"
 }
 
+return
 
+# disable
 setuprepo(){
     repo="$1"
     if [ -z "$repo" -o ! -d "$repo" -o ! -d "$repo/.git" ] ; then
