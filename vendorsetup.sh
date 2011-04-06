@@ -46,7 +46,7 @@ function bb(){
 
 
 function getzip(){
-    last=$(ls -1 update-sm-*-signed.zip 2>/dev/null| sort -n | head -1 | sed -n 's/update-sm-\([[:digit:]]*\)-signed.zip/\1/g')
+    last=$(ls -1t update-sm-*-signed.zip 2>/dev/null | head -1 | sed -n 's/update-sm-\([[:digit:]]*\)-signed.zip/\1/gp')
     new=$((last + 1))
     mv out/target/product/vision/update-squished.zip update-sm-$new-signed.zip || exit 1
     rm -f out/target/product/vision/update-squished.zip.md5sum
