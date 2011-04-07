@@ -62,8 +62,7 @@ function bb(){
     [ "$1" = "-s" ] && shift && msync
     find out -name \*.prop | xargs rm -f ;
     bib ${1:=vision} ${2:=-p}
-    mka bacon
-    getzip
+    mka bacon && getzip
 }
 
 
