@@ -28,6 +28,16 @@ export USE_CCACHE=1
 export CCACHE_DIR=$HOME/workspace/mydroid/ccache/
 export CYANOGEN_NIGHTLY=true
 
+
+function putfiles(){
+    for i in $* ; do 
+		dest=$i
+		dest=${dest#*vision}
+		dest=${dest#*dream_sapphire}
+        adb push $HOME/workspace/mydroid/$i $dest
+    done
+}
+
 githublogin="sileht"
 workingversion="gingerbread"
 
@@ -35,23 +45,36 @@ echobold(){
     echo -e "\033[1m$@\033[0m"
 }
 
+function get_device(){
+	echo "$TARGET_PRODUCT" | sed -n -e 's/^cyanogen_//gp'
+}
+
+function b(){
+	if [ -n "$(get_device)" ] ; then
+        bib ${1:=vision} ${2:=-p}
+    fi
+	echobold "** Build module for $(get_device) **"
+    mm
+}
+
 function bb(){
 	[ ! -d .repo ] && echo 'Not root dir' && return
-    [ "$1" = "-s" ] && msync
+    [ "$1" = "-s" ] && shift && msync
     find out -name \*.prop | xargs rm -f ;
-    bib vision -p
+    bib ${1:=vision} ${2:=-p}
     mka bacon
     getzip
 }
 
 
 function getzip(){
-    last=$(ls -1t update-sm-*-signed.zip 2>/dev/null | head -1 | sed -n 's/update-sm-\([[:digit:]]*\)-signed.zip/\1/gp')
+	name=$(get_device)
+    last=$(ls -1t update-sm-$name-*-signed.zip 2>/dev/null | head -1 | sed -n 's/update-sm-'$name'-\([[:digit:]]*\)-signed.zip/\1/gp')
     new=$((last + 1))
-    mv out/target/product/vision/update-squished.zip update-sm-$new-signed.zip || exit 1
+    mv out/target/product/$name/update-squished.zip update-sm-$name-$new-signed.zip || exit 1
     rm -f out/target/product/vision/update-squished.zip.md5sum
-    ls -la update-sm-$new-signed.zip
-    md5sum update-sm-$new-signed.zip |tee update-sm-$new-signed.zip.md5sum
+    ls -la update-sm-$name-$new-signed.zip
+    md5sum update-sm-$name-$new-signed.zip |tee update-sm-$name-$new-signed.zip.md5sum
 }
 
 function check_repo() {
