@@ -50,7 +50,7 @@ function get_device(){
 }
 
 function b(){
-	if [ -n "$(get_device)" ] ; then
+	if [ -z "$(get_device)" ] ; then
         bib ${1:=vision} ${2:=-p}
     fi
 	echobold "** Build module for $(get_device) **"
@@ -113,8 +113,6 @@ function stash_restore_repo(){
 
 function rebase_work(){
     git branch | grep current-work > /dev/null && {
-        remote_name=$(git  remote -v | grep "$remote.*fetch" | awk '{print $1}')
-
         echobold "** Rebase $repo on $remote_name/$workingversion **"
 
         git checkout current-work
@@ -176,7 +174,8 @@ myrepos(){
     	[ ! -d $repo ] && continue
     	pushd $repo
         if [ -n "$all" -o -d .git/refs/remotes/sileht ]; then
-			curhead=
+			currentwork=
+			currentworkperso=
 			stage1=
 			stage2=
             autosyncflags=
@@ -186,9 +185,23 @@ myrepos(){
             [ -z "$remote" ] && remote=$(git remote -v | grep ^origin.*fetch.* | awk '{print $2}')
             [ -z "$remote" ] && remote=$(git remote -v | grep ^sileht.*fetch.* | awk '{print $2}')
 
+        	remote_name=$(git  remote -v | grep "$remote.*fetch" | awk '{print $1}')
 
-            [ -e .git/refs/heads/current-work ] && curhead="C"
-            [ -e .git/refs/heads/current-work-perso ] && curhead="P"
+            if [ -e .git/refs/heads/current-work ]; then
+				if [ -n "$(git diff-index $remote_name/$workingversion 2>/dev/null)" ] ; then
+					currentwork="C"
+				else
+					currentwork="c"
+				fi
+			fi
+
+            if [ -e .git/refs/heads/current-work-perso ]; then
+				if [ -n "$(git diff-index current-work 2>/dev/null)" ] ; then
+					currentworkperso="P"
+				else
+					currentworkperso="p"
+				fi
+			fi
 
             git stash list | grep autosync >/dev/null && autosyncflags="F"
 
@@ -196,7 +209,7 @@ myrepos(){
 			git diff-index --cached --quiet --ignore-submodules HEAD || stage2="²"
 
             if [ -z "$hook" ]; then
-    			printf '%35s [%1s%1s%1s%1s] : %s%s\n' "$repo" "$curhead" "$stage1" "$stage2" "$autosyncflags" "$remote"
+    			printf '%35s [%1s%1s%1s%1s%1s] : %s%s\n' "$repo" "$currentwork" "$currentworkperso" "$stage1" "$stage2" "$autosyncflags" "$remote"
             else
                 $hook
                 ret=$?
@@ -210,111 +223,4 @@ myrepos(){
 	done 
 }
 
-return
-
-function list_fetch_and_exec(){
-	cmd="$1"
-	repos="$2"
-	[ -z "$repos" ] && repos=($(sed -n -e 's/<project .*path="\([^"]*\)".*/\1/gp' .repo/manifest.xml .repo/local_manifest.xml))
-    for repo in $repos; do
-        [ ! -d $repo ] && continue
-        pushd $repo
-        { git remote -v || echo "Error on: $repo" >&2 ; } | grep "^github.*$githublogin" >/dev/null
-        if [ $? -eq 0 ]; then
-            branch=$({ git remote || echo "Error on: $repo" >&2 ; } | grep automerge | sed 's/^automerge#//g')
-            remote="automerge#$branch"
-            if [ -n "$branch" ]; then
-                echo -ne "* Checking for repo $repo: "
-                echo "$branch"
-                git fetch $remote
-                case $cmd in
-                    merge|rebase)
-                        git $cmd $remote/$branch && git push $githublogin --force
-                        ;;
-                    diff)
-                        git $cmd $remote/$branch
-                        ;;
-                    onlyfetch)
-                        ;;
-                    *)
-                        ;;
-                esac
-            fi
-        fi
-        popd
-    done
-}
-function autodiff(){
-    list_fetch_and_exec diff "$1"
-}
-function autofetch(){
-	list_fetch_and_exec fetchonly "$1"
-}
-function autorebase(){
-	list_fetch_and_exec rebase "$1"
-}
-
-function automerge(){
-	list_fetch_and_exec merge "$1"
-}
-
-return
-
-# disable
-setuprepo(){
-    repo="$1"
-    if [ -z "$repo" -o ! -d "$repo" -o ! -d "$repo/.git" ] ; then
-        echo "Not a valid repo."
-        return 1
-    fi
-
-    branch=$(grep "$repo" .repo/manifest.xml | sed -n -e 's@.*revision="\([^"]*\)".*@\1@gp')
-    [ -z "$branch" ] && branch="froyo"
-
-    reporemote=$(grep "$repo" .repo/manifest.xml | sed -n -e 's@.*remote="\([^"]*\)".*@\1@gp')
-    [ -z "$reporemote" ] && reporemote="korg"
-
-    reponame=$(grep "$repo" .repo/manifest.xml | sed -n -e 's@.*name="\([^"]*\)".*@\1@gp')
-    destreponame="$githublogin/$(echo $reponame | sed -e 's@cyanogen/@@g' -e 's@/@_@g')"
-
-    sourceurl=$(cd $repo && git remote -v | egrep '^(korg|github).*push' | awk '{print $2}')
-    desturl="git@github.com:$destreponame.git"
-
-    echo "branch: $branch"
-    echo "- source: $sourceurl"
-    echo "- $githublogin: $desturl"
-    echo "- repo: $destreponame"
-    read
-    pushd $repo
-    git remote add $githublogin $desturl
-    git remote add automerge#$branch $sourceurl
-    git fetch --all -p
-    popd >/dev/null
-    pushd .repo/manifests/
-    sed -i "s@${reponame}\".*@${destreponame}\" remote=\"github\" />@g" default.xml
-    git commit -a -m "Use my $destreponame repo"
-    popd >/dev/null
-}
-
-function cleanuprepo(){
-    repo="$1"
-    if [ -z "$repo" -o ! -d "$repo" -o ! -d "$repo/.git" ] ; then
-        echo "Not a valid repo."
-        return 1
-    fi
-
-#   commit=$(git log --grep="Use my $destreponame repo" --format='format:%H' | head -1)
-
-#   sourceurl=$(cd $repo && git remote -v | egrep '^automerge.*push' | awk '{print $2}')
-
-    pushd $repo
-    for i in $(git remote); do
-        git remote rm $i
-    done
-    popd >/dev/null
-    repo sync $repo
-    pushd $repo
-    git fetch -p --all -v
-    popd >/dev/null
-}
 
