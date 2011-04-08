@@ -188,7 +188,7 @@ myrepos(){
         	remote_name=$(git  remote -v | grep "$remote.*fetch" | awk '{print $1}')
 
             if [ -e .git/refs/heads/current-work ]; then
-				if [ -n "$(git diff-index $remote_name/$workingversion 2>/dev/null)" ] ; then
+				if [ -n "$(git diff-index current-work $remote_name/$workingversion 2>/dev/null)" ] ; then
 					currentwork="C"
 				else
 					currentwork="c"
@@ -196,7 +196,7 @@ myrepos(){
 			fi
 
             if [ -e .git/refs/heads/current-work-perso ]; then
-				if [ -n "$(git diff-index current-work 2>/dev/null)" ] ; then
+				if [ -n "$(git diff-index current-work-perso current-work 2>/dev/null)" ] ; then
 					currentworkperso="P"
 				else
 					currentworkperso="p"
