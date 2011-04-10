@@ -25,7 +25,7 @@
 export JAVA_HOME=$HOME/workspace/android/jdk1.6.0_22/
 export PATH=$JAVA_HOME/bin:$PATH
 export USE_CCACHE=1
-export CCACHE_DIR=$HOME/workspace/mydroid/ccache/
+export CCACHE_DIR=$HOME/workspace/android/mydroid/ccache/
 export CYANOGEN_NIGHTLY=true
 
 
