@@ -73,7 +73,14 @@ function getzip(){
     mv out/target/product/$name/update-squished.zip update-sm-$name-$new-signed.zip || exit 1
     rm -f out/target/product/vision/update-squished.zip.md5sum
     ls -la update-sm-$name-$new-signed.zip
-    md5sum update-sm-$name-$new-signed.zip |tee update-sm-$name-$new-signed.zip.md5sum
+    n=$new
+    while [ $n -ne 0 ]; do
+        n=$((n - 1))
+        zip="update-sm-$name-$n-signed.zip"
+        [ ! -e "$zip" ] && break;
+        rm --interactive=never "$zip" 
+    done
+    #md5sum update-sm-$name-$new-signed.zip |tee update-sm-$name-$new-signed.zip.md5sum
 }
 
 function check_repo() {
